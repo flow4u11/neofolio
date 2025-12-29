@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kim | Neo-Brutalism</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                        'mono': ['"Space Mono"', 'monospace'],
+                    },
+                    boxShadow: {
+                        'neo': '8px 8px 0px 0px #000',
+                        'neo-white': '8px 8px 0px 0px #FFF',
+                        'neo-hover': '0px 0px 0px 0px #000',
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                        '4': '4px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-marquee {
+            animation: marquee 15s linear infinite;
+        }
+
+        /* Neo-Brutalist Utilities */
+        .neo-card {
+            background-color: white;
+            color: black;
+            border: 4px solid black;
+            box-shadow: 8px 8px 0px 0px #333;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .neo-card:hover {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px 0px #333;
+        }
+
+        .text-stroke {
+            -webkit-text-stroke: 2px white;
+            color: transparent;
+        }
+
+        .text-stroke-black {
+            -webkit-text-stroke: 1px black;
+            color: transparent;
+        }
+
+        /* Glare Effect CSS */
+        .glare-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glare-overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg,
+                    rgba(255, 255, 255, 0) 40%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    rgba(255, 255, 255, 0) 60%);
+            background-size: 250% 250%;
+            background-repeat: no-repeat;
+            background-position: -100% -100%;
+            pointer-events: none;
+            z-index: 50;
+            transition: background-position 0.65s ease;
+        }
+
+        .glare-active .glare-overlay {
+            background-position: 100% 100%;
+        }
+
+        /* Black Glare for White Backgrounds */
+        .glare-black .glare-overlay {
+            background-image: linear-gradient(-45deg,
+                    rgba(0, 0, 0, 0) 40%,
+                    rgba(0, 0, 0, 0.3) 50%,
+                    rgba(0, 0, 0, 0) 60%);
+        }
+
+        /* Scroll Float: Ensure inline-block for transforms */
+        .scroll-float-char {
+            display: inline-block;
+            transform-origin: 50% 0%;
+        }
+
+        /* Utility: Hide Scrollbar but allow scrolling */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white select-none overflow-x-hidden" ondragstart="return false;" ondrop="return false;">
+    <style>
+        /* Global Drag & Select Disable */
+        * {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Allow selection on inputs/textareas if needed later, but for now user said ALL */
+    </style>
+    <div id="app" class="relative w-full">
+
+
+        <!-- HEADER -->
+        <header
+            class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-12 py-4 bg-white border-b-4 border-black">
+            <div class="bg-black text-white px-4 py-1 transform -rotate-1 border-2 border-black">
+                <span class="text-2xl font-black font-mono">CC>></span>
+            </div>
+
+            <nav class="hidden md:flex gap-8">
+                <a href="#hero"
+                    class="text-black font-black uppercase hover:underline decoration-4 underline-offset-4 scroll-text">Home</a>
+                <a href="#about"
+                    class="text-black font-black uppercase hover:underline decoration-4 underline-offset-4 scroll-text">About
+                    Me</a>
+                <a href="#works"
+                    class="text-black font-black uppercase hover:underline decoration-4 underline-offset-4 scroll-text">Works</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="bg-white text-black w-10 h-10 flex items-center justify-center border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all" title="Switch Theme">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.355m0-2.657l2.828 2.829m5.657 5.657L21 12m-9.9 .1l2.828-2.828M21 21l-3-3m-3 3l3-3"></path></svg>
+                </button>
+
+                <a href="#contact"
+                    class="glare-auto bg-black text-white px-6 py-2 font-black border-2 border-black uppercase shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all hover:bg-white hover:text-black scroll-float">
+                    Contact
+                </a>
+            </div>
+        </header>
+
+        <!-- HERO SECTION: Black Background -->
+        <section id="hero" data-theme="dark"
+            class="relative w-full h-screen min-h-[700px] flex flex-col justify-center items-center border-b-4 border-white bg-black [background-size:20px_20px] overflow-hidden z-0">
+            <div
+                class="container mx-auto px-4 z-20 flex flex-col items-center justify-center text-center gap-4 relative">
+
+                <div
+                    class="bg-white border-4 border-black px-6 py-1 transform -rotate-2 shadow-[4px_4px_0px_0px_#FFF] scroll-float">
+                    <h2 class="text-lg md:text-xl font-black text-black uppercase">Hi, I’m <span
+                            class="italic">Kim</span></h2>
+                </div>
+
+                <!-- Headline -->
+                <div class="flex flex-col items-center leading-[0.9] relative group w-full max-w-6xl px-4">
+                    <h1
+                        class="text-[clamp(2.5rem,8vw,7rem)] md:text-[5rem] lg:text-[7rem] font-black tracking-tighter text-white hover:skew-x-3 transition-transform scroll-float-text whitespace-nowrap">
+                        UI/UX DESIGNER
+                    </h1>
+                    <div class="flex items-center gap-4 my-2 scroll-float">
+                        <span class="h-1 w-8 md:w-20 bg-white block"></span>
+                        <span class="text-xl md:text-3xl font-mono text-white/50 italic">AND</span>
+                        <span class="h-1 w-8 md:w-20 bg-white block"></span>
+                    </div>
+                    <h1
+                        class="text-[clamp(2.5rem,8vw,7rem)] md:text-[5rem] lg:text-[7rem] font-black tracking-widest text-transparent text-stroke hover:text-white transition-colors duration-300 scroll-float-text whitespace-nowrap">
+                        VIDEO EDITOR
+                    </h1>
+                </div>
+
+                <!-- Description -->
+                <!-- Description Container -->
+                <div class="relative max-w-xl mt-6 scroll-float w-full">
+                    <div class="absolute -top-8 right-0 z-10">
+                        <button onclick="toggleHeroDescription(this)"
+                            class="bg-black border-2 border-white text-white text-[10px] font-mono px-3 py-1 hover:bg-white hover:text-black transition-colors uppercase flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span>+ EXPAND</span>
+                        </button>
+                    </div>
+                    <div id="hero-desc-content"
+                        class="text-gray-300 text-base md:text-lg font-mono border-l-4 border-white pl-4 text-left bg-black/50 overflow-hidden transition-all duration-300 ease-in-out"
+                        style="max-height: 0px; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;">
+                        A Junior UX/UI Designer passionate about <span class="text-white font-bold">minimalism</span>,
+                        functionality, and pixel-perfect details.
+                    </div>
+                </div>
+
+                <!-- Hire Now Button -->
+                <div class="mt-8 scroll-float mb-32">
+                    <a href="#contact" class="inline-block">
+                        <button
+                            class="glare-auto glare-black bg-white text-black px-10 py-4 text-2xl font-black uppercase border-4 border-black shadow-[8px_8px_0px_0px_#FFF] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all hover:bg-black hover:text-white hover:border-white">
+                            HIRE NOW
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Scroll Down Indicator (Reworked) -->
+                <a href="#about"
+                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-30 group cursor-pointer hover:opacity-80 transition-opacity">
+                    <span
+                        class="font-mono text-[10px] font-bold tracking-[0.3em] uppercase bg-white text-black px-3 py-1 border-2 border-white group-hover:bg-black group-hover:text-white transition-colors">
+                        SCROLL
+                    </span>
+                    <svg class="w-8 h-8 animate-bounce" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4V20M12 20L19 13M12 20L5 13" stroke="white" stroke-width="4"
+                            stroke-linecap="square" stroke-linejoin="miter" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- ABOUT ME SECTION: White Background -->
+        <section id="about" data-theme="light"
+            class="relative w-full py-24 bg-white border-b-4 border-black text-black z-0">
+            <div id="about-particles" class="hidden"></div> <!-- Deprecated ID, using global -->
+
+            <!-- Marquee -->
+            <div
+                class="scroll-float no-cursor-track w-full bg-black text-white py-6 border-y-4 border-black overflow-hidden mb-20 rotate-1 shadow-[8px_8px_0px_0px_#000] relative z-20">
+                <div class="whitespace-nowrap animate-marquee flex gap-12">
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 md:px-8 xl:px-16 max-w-[1600px] relative z-20">
+                <!-- Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6 md:gap-8">
+
+                    <!-- Profile Photo -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 xl:col-span-3 neo-card !shadow-[8px_8px_0px_0px_#000] p-0 overflow-hidden group min-h-[300px] bg-white">
+                        <div
+                            class="bg-black text-white px-2 py-1 font-mono text-xs font-bold border-b-3 border-black text-center">
+                            IMG_PROFILE_01</div>
+                        <div class="w-full h-full relative">
+                            <img src="./assets/profile-pic.png"
+                                onerror="this.src='https://placehold.co/400x400/222/FFF?text=KIM'"
+                                class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-300 absolute inset-0" />
+                        </div>
+                    </div>
+
+                    <!-- Information Card -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 xl:col-span-4 bg-black border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 text-white flex flex-col justify-center transform hover:-translate-y-1 transition-transform min-h-[300px]">
+                        <h3
+                            class="text-2xl lg:text-3xl font-black mb-6 uppercase border-b-4 border-white inline-block w-fit">
+                            Information</h3>
+                        <div class="space-y-4 font-mono text-base lg:text-lg">
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Name:</span> <span>Chayathorn C.</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Edu:</span> <span>Bangkok Univ</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Loc:</span> <span>Thailand</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Lang:</span> <span>EN / TH</span></p>
+                        </div>
+                    </div>
+
+                    <!-- What I do? -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-2 xl:col-span-5 neo-card !shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex flex-col justify-center gap-6 min-h-[300px]">
+                        <h3
+                            class="text-3xl lg:text-4xl font-black uppercase bg-black text-white inline-block px-2 transform -rotate-1 w-fit">
+                            What I do?</h3>
+                        <p class="text-base lg:text-lg font-bold leading-relaxed text-black">
+                            Junior <span class="bg-black text-white px-1">UX/UI Designer</span> building intuitive apps.
+                            <br><br>
+                            Video Editor creating <span class="underline decoration-4">gaming montages</span> with
+                            rhythm & flow.
+                        </p>
+                    </div>
+
+                    <!-- Skills & Tools -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-2 xl:col-span-5 neo-card !shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 bg-zinc-100 min-h-[300px]">
+                        <h3 class="text-2xl lg:text-3xl font-black mb-6 uppercase flex items-center gap-2 text-black">
+                            <span class="w-4 h-4 bg-black"></span> Skills
+                        </h3>
+                        <div class="flex flex-col gap-4">
+                            <div
+                                class="flex items-center gap-4 border-2 border-black p-3 bg-white hover:bg-black hover:text-white transition-colors group relative z-10">
+                                <img src="./assets/figma-logo.png" onerror="this.style.display='none'"
+                                    class="w-10 h-10 object-contain group-hover:invert">
+                                <div>
+                                    <h4 class="font-black text-lg lg:text-xl">FIGMA</h4>
+                                    <p class="font-mono text-xs font-bold">High-fidelity UI & Systems</p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center gap-4 border-2 border-black p-3 bg-white hover:bg-black hover:text-white transition-colors group relative z-10">
+                                <img src="./assets/davinci-logo.png" onerror="this.style.display='none'"
+                                    class="w-10 h-10 object-contain group-hover:invert">
+                                <div>
+                                    <h4 class="font-black text-lg lg:text-xl">DAVINCI</h4>
+                                    <p class="font-mono text-xs font-bold">Editing & Visual Effects</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aesthetics -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 xl:col-span-4 bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex flex-col justify-center items-center text-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer min-h-[300px]">
+                        <div class="font-mono text-sm font-bold bg-black text-white px-2 mb-2">AESTHETIC_MODE</div>
+                        <div class="text-3xl lg:text-4xl font-black uppercase text-black scroll-float-text">Minimalist
+                        </div>
+                        <div
+                            class="mt-4 text-2xl lg:text-3xl font-black bg-black text-white px-4 py-2 rotate-2 border-2 border-black scroll-float-text">
+                            Dark Mode</div>
+                    </div>
+
+                    <!-- Experience Placeholder -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 xl:col-span-3 bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex items-center justify-center text-center relative overflow-hidden min-h-[300px]">
+                        <div class="absolute inset-0 opacity-5"
+                            style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 10px 10px;">
+                        </div>
+                        <div class="z-10">
+                            <p class="text-lg lg:text-xl font-bold font-mono text-gray-600">Status:</p>
+                            <p
+                                class="text-2xl lg:text-3xl font-black uppercase text-black underline decoration-4 decoration-black mt-2">
+                                Looking for Experience...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SHOWCASE SECTION: Black Background -->
+        <section id="works" data-theme="dark"
+            class="relative w-full min-h-screen bg-black text-white py-24 border-t-4 border-white z-0">
+            <div class="text-center mb-20 relative w-full overflow-hidden z-20">
+                <!-- Background Texture -->
+                <div class="absolute inset-0 opacity-20 pointer-events-none"
+                    style="background-image: linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222), linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222); background-size: 20px 20px; background-position: 0 0, 10px 10px;">
+                </div>
+
+                <h2
+                    class="text-[12rem] font-black text-white/5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none whitespace-nowrap scroll-float">
+                    SHOWCASE</h2>
+                <h2 class="text-7xl md:text-9xl font-black text-white relative z-10 uppercase italic scroll-float-text">
+                    Showcase</h2>
+            </div>
+
+            <div
+                class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-[1440px] relative z-20">
+                <!-- Project 1 -->
+                <div onclick="openProjectModal(1)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform -rotate-6">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">01</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Website Redesign</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">UI/UX</span>
+                                <span class="border-2 border-black px-2 py-1">2024</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div onclick="openProjectModal(2)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform rotate-3">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">02</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Mobile App</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">PROTOTYPE</span>
+                                <span class="border-2 border-black px-2 py-1">2024</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div onclick="openProjectModal(3)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform -rotate-2">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">03</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Gaming Montage</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">VIDEO</span>
+                                <span class="border-2 border-black px-2 py-1">2023</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION: White Background -->
+        <section id="contact" data-theme="light"
+            class="relative w-full min-h-[80vh] bg-white text-black flex flex-col justify-center items-center py-20 border-t-4 border-black z-0">
+
+            <div class="text-center mb-12 relative w-full z-10">
+                <h2
+                    class="text-[5rem] md:text-[8rem] font-black text-black mb-8 uppercase tracking-tighter mix-blend-multiply scroll-float-text">
+                    CONTACT</h2>
+            </div>
+
+            <div
+                class="scroll-float bg-black text-white border-4 border-black p-12 shadow-[12px_12px_0px_0px_#000] rotate-1 hover:rotate-0 transition-transform duration-300 max-w-2xl w-full mx-4 relative">
+                <div
+                    class="absolute -top-6 -right-6 bg-white text-black border-3 border-black p-2 font-black rotate-12 shadow-neo">
+                    OPEN TO WORK</div>
+
+                <h3 class="text-4xl font-black mb-8 border-b-4 border-white pb-4">GET IN TOUCH</h3>
+
+                <div class="flex flex-col gap-6">
+                    <a href="#"
+                        class="text-2xl font-bold flex items-center gap-4 hover:bg-white hover:text-black hover:px-2 transition-all group relative z-10">
+                        <span
+                            class="w-8 h-8 rounded-none border-2 border-white flex items-center justify-center text-xs font-mono group-hover:border-black group-hover:bg-black group-hover:text-white">D</span>
+                        Discord @Flow4u
+                    </a>
+                    <a href="mailto:daffodz1@gmail.com"
+                        class="text-2xl font-bold flex items-center gap-4 hover:bg-white hover:text-black hover:px-2 transition-all group relative z-10">
+                        <span
+                            class="w-8 h-8 rounded-none border-2 border-white flex items-center justify-center text-xs font-mono group-hover:border-black group-hover:bg-black group-hover:text-white">@</span>
+                        daffodz1@gmail.com
+                    </a>
+                </div>
+
+                <div class="mt-12 pt-8 border-t-2 border-white/30">
+                    <button
+                        class="glare-auto glare-black w-full bg-white text-black font-black py-4 uppercase border-4 border-transparent hover:border-black hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_#333] hover:shadow-none hover:translate-x-1 hover:translate-y-1">
+                        Send a Message
+                    </button>
+                </div>
+            </div>
+
+            <footer class="absolute bottom-4 text-black font-mono font-bold text-xs uppercase">
+                © 2024 Kim Portfolio. Neo-Brutalism.
+            </footer>
+        </section>
+
+    </div>
+
+    <!-- Custom Cursor Markup -->
+    <div id="target-cursor"
+        class="fixed top-0 left-0 w-0 h-0 pointer-events-none z-[100001] hidden md:block mix-blend-difference">
+        <!-- Center Dot -->
+        <div class="relative">
+            <div
+                class="cursor-dot absolute top-1/2 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 before:content-[''] before:absolute before:-inset-8 before:rounded-full">
+            </div>
+            <!-- Corners -->
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(-150%, -150%); border-right: 0; border-bottom: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(50%, -150%); border-left: 0; border-bottom: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(50%, 50%); border-left: 0; border-top: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(-150%, 50%); border-right: 0; border-top: 0;"></div>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL (New) -->
+    <div id="project-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-sm" onclick="closeProjectModal()"></div>
+
+        <!-- Content Container -->
+        <div
+            class="relative w-full max-w-7xl h-[85vh] bg-white border-4 border-black shadow-[8px_8px_0px_0px_#333] flex flex-col overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center p-6 border-b-4 border-black bg-white z-10 shrink-0">
+                <div>
+                    <h3 id="modal-title"
+                        class="text-2xl md:text-4xl font-black uppercase tracking-tighter mix-blend-multiply text-black">
+                        PROJECT TITLE</h3>
+                    <div class="flex gap-3 mt-2 font-mono text-xs font-bold text-black">
+                        <span id="modal-category" class="bg-black text-white px-2 py-1">CATEGORY</span>
+                        <span id="modal-year" class="border-2 border-black px-2 py-1">YEAR</span>
+                    </div>
+                </div>
+                <button onclick="closeProjectModal()"
+                    class="w-12 h-12 flex items-center justify-center border-4 border-black bg-black text-white hover:bg-red-600 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Gallery / Swipe Area -->
+            <div id="modal-gallery"
+                class="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-hidden scrollbar-hide bg-zinc-100 items-center">
+                <!-- Images injected here -->
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button id="modal-prev"
+                class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white text-black border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-y-[-45%] hover:shadow-none transition-all disabled:opacity-0 disabled:pointer-events-none group"
+                onclick="scrollModal(-1)">
+                <svg class="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button id="modal-next"
+                class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white text-black border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-y-[-45%] hover:shadow-none transition-all disabled:opacity-0 disabled:pointer-events-none group"
+                onclick="scrollModal(1)">
+                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <!-- Footer / Instructions -->
+            <div class="absolute bottom-6 left-0 w-full flex justify-center gap-4 pointer-events-none">
+                <div
+                    class="bg-black/80 text-white px-4 py-2 font-mono text-xs font-bold pointer-events-auto backdrop-blur-md rounded-full border border-white/20 flex items-center gap-4">
+                    <span>SWIPE / SCROLL TO VIEW</span>
+                    <span class="w-px h-3 bg-white/50"></span>
+                    <span id="modal-counter">01 / 03</span>
+                </div>
+                <!-- Progress Line -->
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-zinc-200">
+                    <div id="modal-progress" class="h-full bg-black w-0 transition-all duration-300 ease-out"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLARE + SCROLL FLOAT + CURSOR SCRIPTS -->
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- PROJECT MODAL LOGIC ---
+        const projectData = {
+            1: {
+                title: "Website Redesign",
+                category: "UI/UX",
+                year: "2024",
+                images: [
+                    "https://placehold.co/1920x1080/111/FFF?text=UX+Research+&+Wireframes",
+                    "https://placehold.co/1920x1080/222/FFF?text=Design+System+%26+Typography",
+                    "https://placehold.co/1920x1080/000/FFF?text=Final+Mockups"
+                ]
+            },
+            2: {
+                title: "Mobile App",
+                category: "PROTOTYPE",
+                year: "2024",
+                images: [
+                    "https://placehold.co/1080x1920/111/FFF?text=Login+Flow",
+                    "https://placehold.co/1080x1920/222/FFF?text=Dashboard+View",
+                    "https://placehold.co/1080x1920/333/FFF?text=Interactive+Elements"
+                ]
+            },
+            3: {
+                title: "Gaming Montage",
+                category: "VIDEO",
+                year: "2023",
+                images: [
+                    "https://placehold.co/1920x1080/400/FFF?text=Editing+Timeline",
+                    "https://placehold.co/1920x1080/600/FFF?text=Color+Grading+Before/After",
+                    "https://placehold.co/1920x1080/800/FFF?text=VFX+Breakdown"
+                ]
+            }
+        };
+
+        window.openProjectModal = (id) => {
+            const modal = document.getElementById('project-modal');
+            const data = projectData[id];
+            if (!data) return;
+
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-category').textContent = data.category;
+            document.getElementById('modal-year').textContent = data.year;
+
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
+
+            data.images.forEach(imgSrc => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'w-full h-full p-4 md:p-12 flex-shrink-0 snap-center flex items-center justify-center select-none';
+
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'max-w-full max-h-full object-contain border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] bg-white pointer-events-none';
+
+                imgContainer.appendChild(img);
+                gallery.appendChild(imgContainer);
+            });
+
+            modal.classList.remove('hidden');
+
+            // Animation
+            gsap.fromTo(modal.querySelector('.relative'),
+                { scale: 0.95, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' }
+            );
+
+            document.body.style.overflow = 'hidden';
+
+            // --- DRAG TO SCROLL LOGIC ---
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            gallery.addEventListener('mousedown', (e) => {
+                isDown = true;
+                gallery.classList.add('cursor-grabbing');
+                gallery.classList.remove('cursor-grab');
+                gallery.style.scrollBehavior = 'auto';
+                startX = e.pageX - gallery.offsetLeft;
+                scrollLeft = gallery.scrollLeft;
+            });
+
+            gallery.addEventListener('mouseleave', () => {
+                isDown = false;
+                gallery.classList.remove('cursor-grabbing');
+                gallery.style.scrollBehavior = 'smooth';
+            });
+
+            gallery.addEventListener('mouseup', () => {
+                isDown = false;
+                gallery.classList.remove('cursor-grabbing');
+                gallery.style.scrollBehavior = 'smooth';
+            });
+
+            gallery.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - gallery.offsetLeft;
+                const walk = (x - startX) * 2; // Scroll-fast
+                gallery.scrollLeft = scrollLeft - walk;
+            });
+
+            // --- WHEEL TO SCROLL LOGIC ---
+            gallery.addEventListener('wheel', (evt) => {
+                // Only hijack vertical scroll if it's dominant
+                if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
+                    evt.preventDefault();
+                    gallery.scrollLeft += evt.deltaY;
+                }
+            });
+
+            // --- PAGINATION & PROGRESS LOGIC ---
+            const updateProgress = () => {
+                const scrollLeft = gallery.scrollLeft;
+                const width = gallery.offsetWidth;
+                const scrollWidth = gallery.scrollWidth;
+
+                // Calculate current index (0-based)
+                const index = Math.round(scrollLeft / width);
+                const total = data.images.length;
+
+                // Update Counter
+                document.getElementById('modal-counter').textContent = `0${index + 1} / 0${total}`;
+
+                // Update Progress Bar Width
+                // We want the bar to be full when at the last item
+                const progress = ((index + 1) / total) * 100;
+                document.getElementById('modal-progress').style.width = `${progress}%`;
+
+                // Update Arrows State
+                const prevBtn = document.getElementById('modal-prev');
+                const nextBtn = document.getElementById('modal-next');
+
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === total - 1;
+            };
+
+            // Listen to scroll
+            gallery.addEventListener('scroll', updateProgress);
+
+            // Initial call
+            updateProgress();
+        };
+
+        window.scrollModal = (direction) => {
+            const gallery = document.getElementById('modal-gallery');
+            const width = gallery.offsetWidth;
+            gallery.scrollBy({
+                left: direction * width,
+                behavior: 'smooth'
+            });
+        };
+
+        window.closeProjectModal = () => {
+            const modal = document.getElementById('project-modal');
+            gsap.to(modal.querySelector('.relative'), {
+                scale: 0.95,
+                opacity: 0,
+                duration: 0.2,
+                onComplete: () => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+        };
+
+        window.toggleTheme = () => {
+            document.body.classList.toggle('real-neo-theme');
+            const isNeo = document.body.classList.contains('real-neo-theme');
+            
+            // Optional: Save preference or trigger specific animations
+            if(isNeo) {
+                gsap.to('body', { backgroundColor: '#FFDE00', duration: 0.5 });
+            } else {
+                gsap.to('body', { backgroundColor: '#000000', duration: 0.5 });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- TARGET CURSOR LOGIC (Vanilla Adaptation) ---
+            const initCursor = () => {
+                const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768;
+                if (isMobile) return;
+
+                const cursor = document.getElementById('target-cursor');
+                if (!cursor) return;
+
+                const corners = cursor.querySelectorAll('.target-cursor-corner');
+                const dot = cursor.querySelector('.cursor-dot');
+                const spinDuration = 2;
+                const parallaxOn = true;
+                const hoverDuration = 0.2;
+
+                // Hide Default Cursor
+                document.body.style.cursor = 'none';
+
+                // Initial Styles
+                gsap.set(cursor, { x: window.innerWidth / 2, y: window.innerHeight / 2 });
+
+                // Spin Animation
+                let spinTl = gsap.timeline({ repeat: -1 })
+                    .to(cursor, { rotation: 360, duration: spinDuration, ease: 'none' });
+
+                // Mouse Move
+                window.addEventListener('mousemove', e => {
+                    gsap.to(cursor, {
+                        x: e.clientX,
+                        y: e.clientY,
+                        duration: 0.1,
+                        ease: 'power3.out'
+                    });
+                });
+
+                // Interaction State
+                let activeTarget = null;
+                const activeStrength = { value: 0 };
+                let targetCornerPositions = null;
+                const borderWidth = 3;
+                const cornerSize = 12;
+
+                const tickerFn = () => {
+                    if (!targetCornerPositions) return;
+
+                    const strength = activeStrength.value;
+                    if (strength === 0) return;
+
+                    const cursorX = gsap.getProperty(cursor, 'x');
+                    const cursorY = gsap.getProperty(cursor, 'y');
+
+                    corners.forEach((corner, i) => {
+                        const currentX = gsap.getProperty(corner, 'x');
+                        const currentY = gsap.getProperty(corner, 'y');
+
+                        // Relative target position
+                        const targetX = targetCornerPositions[i].x - cursorX;
+                        const targetY = targetCornerPositions[i].y - cursorY;
+
+                        const finalX = currentX + (targetX - currentX) * strength;
+                        const finalY = currentY + (targetY - currentY) * strength;
+
+                        const duration = strength >= 0.99 ? (parallaxOn ? 0.2 : 0) : 0.05;
+
+                        gsap.to(corner, {
+                            x: finalX,
+                            y: finalY,
+                            duration: duration,
+                            ease: duration === 0 ? 'none' : 'power1.out',
+                            overwrite: 'auto'
+                        });
+                    });
+                };
+
+                // Hover Detection
+                // Added :not(.no-cursor-track) to exclude specific elements
+                const targetSelector = 'a, button, .cursor-target, .neo-card:not(.no-cursor-track), .scroll-float:not(.no-cursor-track)';
+
+                const enterHandler = (e) => {
+                    const target = e.target.closest(targetSelector);
+                    if (!target || activeTarget === target) return;
+
+                    activeTarget = target;
+
+                    // Stop spinning & reset
+                    spinTl.pause();
+                    gsap.to(cursor, { rotation: 0, duration: 0.2 });
+
+                    const rect = target.getBoundingClientRect();
+
+                    // Center the cursor visual on the target for calculation logic (but usually we keep following mouse)
+                    // The original React code allows the corners to detach from the cursor center
+
+                    targetCornerPositions = [
+                        { x: rect.left - borderWidth, y: rect.top - borderWidth },
+                        { x: rect.right + borderWidth - cornerSize, y: rect.top - borderWidth },
+                        { x: rect.right + borderWidth - cornerSize, y: rect.bottom + borderWidth - cornerSize },
+                        { x: rect.left - borderWidth, y: rect.bottom + borderWidth - cornerSize }
+                    ];
+
+                    gsap.ticker.add(tickerFn);
+                    gsap.to(activeStrength, { value: 1, duration: hoverDuration, ease: 'power2.out' });
+
+                    // Expand corners initially
+                    corners.forEach((corner, i) => {
+                        const cursorX = gsap.getProperty(cursor, 'x');
+                        const cursorY = gsap.getProperty(cursor, 'y');
+                        gsap.to(corner, {
+                            x: targetCornerPositions[i].x - cursorX,
+                            y: targetCornerPositions[i].y - cursorY,
+                            duration: 0.2,
+                            ease: 'power2.out'
+                        });
+                    });
+
+                    target.addEventListener('mouseleave', leaveHandler, { once: true });
+                };
+
+                const leaveHandler = () => {
+                    gsap.ticker.remove(tickerFn);
+                    activeTarget = null;
+                    targetCornerPositions = null;
+                    gsap.to(activeStrength, { value: 0, duration: 0.1 });
+
+                    // Reset corners
+                    const positions = [
+                        { x: -18, y: -18 }, // -150% of 12px
+                        { x: 6, y: -18 },
+                        { x: 6, y: 6 },
+                        { x: -18, y: 6 }
+                    ];
+
+                    corners.forEach((corner, i) => {
+                        gsap.to(corner, {
+                            x: positions[i].x,
+                            y: positions[i].y,
+                            duration: 0.3,
+                            ease: 'power3.out'
+                        });
+                    });
+
+                    // Resume Spin
+                    spinTl.restart();
+                };
+
+                window.addEventListener('mouseover', enterHandler);
+
+                // Click Effects
+                window.addEventListener('mousedown', () => {
+                    gsap.to(dot, { scale: 0.5, duration: 0.2 });
+                    gsap.to(cursor, { scale: 0.9, duration: 0.2 });
+                });
+                window.addEventListener('mouseup', () => {
+                    gsap.to(dot, { scale: 1, duration: 0.2 });
+                    gsap.to(cursor, { scale: 1, duration: 0.2 });
+                });
+            };
+
+            initCursor();
+
+            // --- SMOOTH SCROLLING FOR ANCHOR LINKS ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // --- GLARE EFFECT LOGIC ---
+            function addGlareTo(el) {
+                if (el.querySelector('.glare-overlay')) return;
+
+                // Only enforce relative/overflow if needed, to avoid breaking flex/grid layouts
+                if (getComputedStyle(el).position === 'static') {
+                    el.style.position = 'relative';
+                }
+
+                if (!el.classList.contains('overflow-hidden')) {
+                    el.classList.add('overflow-hidden');
+                }
+
+                const overlay = document.createElement('div');
+                overlay.className = 'glare-overlay';
+                el.appendChild(overlay);
+                return overlay;
+            }
+
+            const hoverElements = document.querySelectorAll('.glare-hover');
+            hoverElements.forEach(el => {
+                addGlareTo(el);
+                el.addEventListener('mouseenter', () => el.classList.add('glare-active'));
+                el.addEventListener('mouseleave', () => el.classList.remove('glare-active'));
+            });
+
+            const autoElements = document.querySelectorAll('.glare-auto');
+            autoElements.forEach(el => {
+                const overlay = addGlareTo(el);
+                const transitionDuration = 650;
+                const delay = 3000;
+                function animate() {
+                    el.classList.add('glare-active');
+                    setTimeout(() => {
+                        el.classList.remove('glare-active');
+                        setTimeout(animate, delay);
+                    }, transitionDuration + 100);
+                }
+                setTimeout(animate, Math.random() * 1000 + 500);
+            });
+
+
+            // --- SCROLL FLOAT ANIMATION LOGIC (GSAP) ---
+
+            // 1. Text Splitter for Character Animation (HEADLINES ONLY)
+            // Only apply to elements that are purely text to avoid breaking nested tags
+            document.querySelectorAll('.scroll-float-text').forEach(el => {
+                const text = el.textContent.trim();
+                el.textContent = '';
+                const chars = text.split('').map(char => {
+                    const span = document.createElement('span');
+                    span.style.display = 'inline-block';
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    el.appendChild(span);
+                    return span;
+                });
+
+                gsap.fromTo(chars,
+                    {
+                        opacity: 0,
+                        y: 50, // Use pixels for safer typography alignment
+                        scaleY: 1.5,
+                        transformOrigin: '50% 0%'
+                    },
+                    {
+                        duration: 0.5,
+                        ease: 'back.out(1.2)', // Snappier
+                        opacity: 1,
+                        y: 0,
+                        scaleY: 1,
+                        stagger: 0.02,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 95%', // Starts sooner
+                            end: 'bottom center',
+                            toggleActions: 'play none none reverse'
+                        }
+                    }
+                );
+            });
+
+            // 2. Block/Element Float (SAFE MODE)
+            // Animates the entire element without touching inner HTML structure
+            // Apply to: Nav, Cards, Buttons, Lists, Description
+            document.querySelectorAll('.scroll-float, .scroll-text').forEach(el => {
+                gsap.fromTo(el,
+                    {
+                        opacity: 0,
+                        y: 50
+                    },
+                    {
+                        duration: 0.5,
+                        ease: 'power2.out',
+                        opacity: 1,
+                        y: 0,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 95%', // Starts sooner
+                            toggleActions: 'play none none reverse'
+                        }
+                    }
+                );
+            });
+
+            // --- HERO DESCRIPTION TOGGLE ---
+            window.toggleHeroDescription = (btn) => {
+                const content = document.getElementById('hero-desc-content');
+                const spanText = btn.querySelector('span:last-child');
+
+                if (content.style.maxHeight !== '0px') {
+                    // Minimize
+                    content.style.maxHeight = '0px';
+                    content.style.opacity = '0';
+                    content.style.paddingTop = '0';
+                    content.style.paddingBottom = '0';
+                    content.style.marginTop = '0';
+                    spanText.textContent = '+ EXPAND';
+                } else {
+                    // Expand
+                    content.style.maxHeight = '200px'; // Approx max height
+                    content.style.opacity = '1';
+                    content.style.padding = '0.5rem'; // p-2
+                    spanText.textContent = '_ MINIMIZE';
+                }
+            };
+        });
+    </script>
+
+
+</body>
+
+</html>

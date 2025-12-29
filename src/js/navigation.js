@@ -1,0 +1,270 @@
+
+// --- MOBILE MENU TOGGLE ---
+window.toggleMobileMenu = () => {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger-btn');
+    const spans = btn.querySelectorAll('span');
+
+    // Toggle Menu Visibility
+    menu.classList.toggle('translate-x-full');
+
+    // Check if open (we just toggled, so check current state)
+    // If it DOES NOT have translate-x-full, it is OPEN.
+    const isOpen = !menu.classList.contains('translate-x-full');
+
+    if (isOpen) {
+        // Open State: Lock Scroll & Animate Icon
+        document.body.style.overflow = 'hidden';
+
+        // Transform to X
+        spans[0].style.transform = 'translateY(9px) rotate(45deg)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'translateY(-9px) rotate(-45deg)';
+
+    } else {
+        // Closed State: Unlock Scroll & Reset Icon
+        document.body.style.overflow = '';
+
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+    }
+};
+
+// --- THEME SWITCHER DROPDOWN LOGIC ---
+window.toggleThemeDropdown = () => {
+    const menu = document.getElementById('theme-dropdown-menu');
+    menu.classList.toggle('hidden');
+    menu.classList.toggle('flex');
+};
+
+window.setTheme = (themeName) => {
+    const defaultIcon = document.getElementById('theme-icon-default');
+    const neoIcon = document.getElementById('theme-icon-neo');
+    const themeText = document.getElementById('theme-text');
+    const indicatorDefault = document.getElementById('indicator-default');
+    const indicatorNeo = document.getElementById('indicator-neo');
+    const dropdown = document.getElementById('theme-dropdown-menu');
+
+    if (themeName === 'neo') {
+        // Activate Neo
+        document.body.classList.add('real-neo-theme');
+        localStorage.setItem('theme', 'neo');
+
+        // Update UI
+        defaultIcon.classList.add('hidden');
+        neoIcon.classList.remove('hidden');
+        themeText.textContent = "REAL NEO";
+
+        // Indicators
+        indicatorDefault.classList.remove('bg-black');
+        indicatorDefault.classList.add('bg-transparent');
+
+        indicatorNeo.classList.remove('bg-transparent');
+        indicatorNeo.classList.add('bg-black');
+
+    } else {
+        // Activate Default
+        document.body.classList.remove('real-neo-theme');
+        localStorage.setItem('theme', 'default');
+
+        // Update UI
+        defaultIcon.classList.remove('hidden');
+        neoIcon.classList.add('hidden');
+        themeText.textContent = "MONOCHROME";
+
+        // Indicators
+        indicatorDefault.classList.remove('bg-transparent');
+        indicatorDefault.classList.add('bg-black');
+
+        indicatorNeo.classList.remove('bg-black');
+        indicatorNeo.classList.add('bg-transparent');
+    }
+
+    // Close Dropdown
+    dropdown.classList.add('hidden');
+    dropdown.classList.remove('flex');
+};
+
+// Close dropdown when clicking outside
+window.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('theme-dropdown-menu');
+    const btn = document.getElementById('theme-dropdown-btn');
+    if (!dropdown.classList.contains('hidden') && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+        dropdown.classList.remove('flex');
+    }
+});
+
+// --- SMOOTH SCROLLING FOR ANCHOR LINKS (GSAP) ---
+// --- SMOOTH SCROLLING FOR ANCHOR LINKS (GSAP) ---
+// Global Event Delegation handles all current and future links
+document.addEventListener('click', (e) => {
+    const anchor = e.target.closest('a[href^="#"]');
+
+    if (anchor) {
+        e.preventDefault();
+        const targetId = anchor.getAttribute('href');
+
+        // Handle "Top" links or empty hashes
+        const targetElement = targetId === '#' ? document.body : document.querySelector(targetId);
+
+        if (targetElement) {
+            gsap.to(window, {
+                duration: 1.2,
+                scrollTo: { y: targetElement, autoKill: false },
+                ease: "power3.inOut" // Smoother easing
+            });
+        }
+
+        // Mobile Menu Logic: If inside mobile menu, close it
+        if (anchor.closest('#mobile-menu')) {
+            window.toggleMobileMenu();
+        }
+    }
+});
+
+// --- ACTIVE NAV LINK LOGIC (SCROLL SPY) ---
+const initActiveNav = () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sideLinks = document.querySelectorAll('.side-link'); // Select Side Dots
+    const sections = document.querySelectorAll('section');
+
+    // State to prevent interference during click-scroll
+    let isManualScroll = false;
+    let scrollTimeout;
+
+    // TOP NAV CLASSES
+    const activeClasses = ['border-black', 'bg-white', 'shadow-[4px_4px_0px_0px_#000]', 'scale-110'];
+    const inactiveClasses = ['border-transparent'];
+
+    // SIDE NAV CLASSES
+    // Active: Tall Dash, Filled White
+    const sideActiveClasses = ['h-12', 'bg-white'];
+    // Inactive: Small Square, Filled Black (removed 'h-4' here because we remove classes, base class has w-4 h-4)
+    // Actually, we remove 'h-4' when active, add it back when inactive
+
+    const setTopActive = (link) => {
+        navLinks.forEach(l => {
+            l.classList.remove(...activeClasses);
+            l.classList.add(...inactiveClasses);
+        });
+        if (link) {
+            link.classList.remove(...inactiveClasses);
+            link.classList.add(...activeClasses);
+        }
+    };
+
+    const setSideActive = (id) => {
+        sideLinks.forEach(l => {
+            // Reset to default state
+            l.classList.remove('h-12', 'bg-white');
+            l.classList.add('h-4', 'bg-black');
+        });
+
+        if (id) {
+            const activeSide = document.querySelector(`.side-link[href="#${id}"]`);
+            if (activeSide) {
+                // Apply Active Transform
+                activeSide.classList.remove('h-4', 'bg-black');
+                activeSide.classList.add('h-12', 'bg-white');
+            }
+        }
+    };
+
+    // 1. Click Handler (Immediate Feedback + Lock)
+    // We attach this to both top nav and side links
+    [...navLinks, ...sideLinks].forEach(link => {
+        link.addEventListener('click', () => {
+            isManualScroll = true;
+            clearTimeout(scrollTimeout);
+
+            // Extract ID
+            const id = link.getAttribute('href').substring(1);
+            const topLink = document.querySelector(`.nav-link[href="#${id}"]`);
+
+            // Set Visuals immediately
+            setTopActive(topLink);
+            setSideActive(id);
+
+            // Unlock after presumed scroll duration
+            scrollTimeout = setTimeout(() => {
+                isManualScroll = false;
+            }, 1200); // slightly longer due to smoother scroll
+        });
+    });
+
+    // 2. Scroll Handler (Precise Calculation)
+    window.addEventListener('scroll', () => {
+        if (isManualScroll) return;
+
+        let current = '';
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        // Offset: We want the section to be active when it 'dominates' the screen
+        // using 30% of viewport height as the "trigger line" from top
+        const offset = viewportHeight * 0.3;
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+
+            // Check if our "trigger line" is inside this section
+            if (scrollY + offset >= sectionTop && scrollY + offset < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        // Special override: If very close to top, force 'hero' active
+        if (scrollY < 100) current = 'hero';
+
+        // Apply active class if we found a section
+        if (current) {
+            const topLink = document.querySelector(`.nav-link[href="#${current}"]`);
+            setTopActive(topLink);
+            setSideActive(current);
+        }
+    });
+
+    // Initial check
+    window.dispatchEvent(new Event('scroll'));
+};
+
+initActiveNav();
+
+// --- DYNAMIC HEADER RESIZING ---
+const initDynamicHeader = () => {
+    const header = document.querySelector('header');
+    let isHovered = false;
+
+    // Scroll Listener
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50 && !isHovered) {
+            header.classList.add('py-2');
+            header.classList.remove('py-4');
+        } else {
+            header.classList.add('py-4');
+            header.classList.remove('py-2');
+        }
+    });
+
+    // Hover Listeners
+    header.addEventListener('mouseenter', () => {
+        isHovered = true;
+        // Restore Size
+        header.classList.add('py-4');
+        header.classList.remove('py-2');
+    });
+
+    header.addEventListener('mouseleave', () => {
+        isHovered = false;
+        // Re-shrink if scrolled
+        if (window.scrollY > 50) {
+            header.classList.add('py-2');
+            header.classList.remove('py-4');
+        }
+    });
+};
+
+initDynamicHeader();

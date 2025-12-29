@@ -1,0 +1,398 @@
+/* Global Drag & Select Disable */
+* {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #000;
+    color: white;
+    overflow-x: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* REAL NEO-BRUTALISM THEME (Colorful Elements, B&W Backgrounds) */
+/* Activated via body.real-neo-theme */
+
+body.real-neo-theme a.scroll-text:hover {
+    color: #FF66C4 !important;
+    /* Pink Hover */
+    text-decoration-color: #FF66C4 !important;
+}
+
+
+
+/* Transform White Border to Yellow */
+body.real-neo-theme .border-white {
+    border-color: #FFDE59 !important;
+    /* Bright Yellow */
+}
+
+/* Colored Shadows for Neo Theme */
+body.real-neo-theme .shadow-\[4px_4px_0px_0px_\#FFF\] {
+    box-shadow: 4px 4px 0px 0px #FF66C4 !important;
+    /* Pink Shadow */
+    border-color: #FFDE59 !important;
+    /* Yellow Border */
+}
+
+body.real-neo-theme .shadow-\[8px_8px_0px_0px_\#FFF\] {
+    box-shadow: 8px 8px 0px 0px #5ce1e6 !important;
+    /* Cyan Shadow */
+    border-color: #FFDE59 !important;
+    /* Yellow Border */
+}
+
+body.real-neo-theme .shadow-\[4px_4px_0px_0px_\#000\] {
+    box-shadow: 4px 4px 0px 0px #8C52FF !important;
+    /* Purple Shadow */
+}
+
+body.real-neo-theme .shadow-\[8px_8px_0px_0px_\#000\] {
+    box-shadow: 8px 8px 0px 0px #FF914D !important;
+    /* Orange Shadow */
+}
+
+body.real-neo-theme .shadow-\[10px_10px_0px_0px_\#333\] {
+    box-shadow: 10px 10px 0px 0px #7ED957 !important;
+    /* Green Shadow */
+}
+
+body.real-neo-theme .shadow-\[12px_12px_0px_0px_\#000\] {
+    box-shadow: 12px 12px 0px 0px #FFDE59 !important;
+    /* Yellow Shadow */
+}
+
+/* Specific Element Overrides */
+body.real-neo-theme .text-stroke {
+    -webkit-text-stroke: 2px #5ce1e6 !important;
+    /* Cyan Stroke */
+}
+
+/* Hire Button */
+body.real-neo-theme button.glare-black.bg-white {
+    background-color: #FFDE59 !important;
+    /* Yellow Button */
+    color: black !important;
+}
+
+/* Contact Section Elements */
+body.real-neo-theme #contact .bg-black {
+    background-color: #8C52FF !important;
+    /* Purple Card */
+    color: white !important;
+}
+
+body.real-neo-theme #contact .bg-black .text-white {
+    color: white !important;
+}
+
+/* Marquee */
+body.real-neo-theme .animate-marquee .text-stroke {
+    -webkit-text-stroke: 2px #FF66C4 !important;
+    /* Pink Stroke */
+}
+
+/* SHOWCASE SECTION OVERRIDES FOR NEO THEME */
+body.real-neo-theme #works .bg-white {
+    background-color: #000 !important;
+    /* Card Background Black */
+    color: white !important;
+    /* Text White */
+}
+
+body.real-neo-theme #works .text-black {
+    color: white !important;
+}
+
+/* SHOWCASE UNIQUE COLORS (Neo Theme) */
+
+/* Project 1: Pink Border, Cyan Shadow */
+body.real-neo-theme #works .grid>div:nth-child(1) .border-white {
+    border-color: #FF66C4 !important;
+}
+
+body.real-neo-theme #works .grid>div:nth-child(1) .shadow-\[10px_10px_0px_0px_\#333\] {
+    box-shadow: 10px 10px 0px 0px #5ce1e6 !important;
+}
+
+/* Project 2: Purple Border, Yellow Shadow */
+body.real-neo-theme #works .grid>div:nth-child(2) .border-white {
+    border-color: #8C52FF !important;
+}
+
+body.real-neo-theme #works .grid>div:nth-child(2) .shadow-\[10px_10px_0px_0px_\#333\] {
+    box-shadow: 10px 10px 0px 0px #FFDE59 !important;
+}
+
+/* Project 3: Orange Border, Green Shadow */
+body.real-neo-theme #works .grid>div:nth-child(3) .border-white {
+    border-color: #FF914D !important;
+}
+
+body.real-neo-theme #works .grid>div:nth-child(3) .shadow-\[10px_10px_0px_0px_\#333\] {
+    box-shadow: 10px 10px 0px 0px #7ED957 !important;
+}
+
+/* Inner Badges (Inverting for visibility on black card) */
+body.real-neo-theme #works .bg-black {
+    background-color: #FFF !important;
+    /* White Background */
+    color: black !important;
+    /* Black Text */
+}
+
+body.real-neo-theme #works .border-black {
+    border-color: #FFF !important;
+    /* White Border */
+    color: white !important;
+    /* White Text (was black usually) */
+}
+
+
+/* BENTO GRID NEO COLORS (Multi-colored Boxes) */
+body.real-neo-theme #about .grid>div:nth-child(1) {
+    background-color: #FF66C4 !important;
+    /* Pink */
+    color: black !important;
+}
+
+body.real-neo-theme #about .grid>div:nth-child(1) .bg-black {
+    background-color: black !important;
+    color: white !important;
+}
+
+/* 2. Info Card */
+body.real-neo-theme #about .grid>div:nth-child(2) {
+    background-color: #5ce1e6 !important;
+    /* Cyan */
+    color: black !important;
+    border-color: black !important;
+}
+
+body.real-neo-theme #about .grid>div:nth-child(2) h3 {
+    border-color: black !important;
+}
+
+body.real-neo-theme #about .grid>div:nth-child(2) .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 3. What I do */
+body.real-neo-theme #about .grid>div:nth-child(3) {
+    background-color: #FFDE59 !important;
+    /* Yellow */
+}
+
+/* 4. Skills */
+body.real-neo-theme #about .grid>div:nth-child(4) {
+    background-color: #7ED957 !important;
+    /* Green */
+}
+
+/* 5. Aesthetics */
+body.real-neo-theme #about .grid>div:nth-child(5) {
+    background-color: #FF914D !important;
+    /* Orange */
+}
+
+/* 6. Experience */
+body.real-neo-theme #about .grid>div:nth-child(6) {
+    background-color: #8C52FF !important;
+    /* Purple */
+}
+
+body.real-neo-theme #about .grid>div:nth-child(6) p,
+body.real-neo-theme #about .grid>div:nth-child(6) .text-gray-600 {
+    color: white !important;
+}
+
+body.real-neo-theme #about .grid>div:nth-child(6) .decoration-black {
+    text-decoration-color: white !important;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 15s linear infinite;
+}
+
+/* Neo-Brutalist Utilities */
+.neo-card {
+    background-color: white;
+    color: black;
+    border: 4px solid black;
+    box-shadow: 8px 8px 0px 0px #333;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.neo-card:hover {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px 0px #333;
+}
+
+.text-stroke {
+    -webkit-text-stroke: 2px white;
+    color: transparent;
+}
+
+.text-stroke-black {
+    -webkit-text-stroke: 1px black;
+    color: transparent;
+}
+
+/* Glare Effect CSS */
+.glare-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.glare-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 60%);
+    background-size: 250% 250%;
+    background-repeat: no-repeat;
+    background-position: -100% -100%;
+    pointer-events: none;
+    z-index: 50;
+    transition: background-position 0.65s ease;
+}
+
+.glare-active .glare-overlay {
+    background-position: 100% 100%;
+}
+
+.glare-black .glare-overlay {
+    background-image: linear-gradient(-45deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 60%);
+}
+
+/* Scroll Float */
+.scroll-float-char {
+    display: inline-block;
+    transform-origin: 50% 0%;
+}
+
+/* Utility: Hide Scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* --- NEO-SHAPE ANIMATIONS --- */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* Randomized Spin Classes */
+.spin-slow {
+    animation: spin 20s linear infinite;
+}
+
+.spin-medium {
+    animation: spin 12s linear infinite;
+}
+
+.spin-fast {
+    animation: spin 6s linear infinite;
+}
+
+.spin-rev-slow {
+    animation: spin-reverse 25s linear infinite;
+}
+
+.spin-rev-medium {
+    animation: spin-reverse 15s linear infinite;
+}
+
+.spin-rev-fast {
+    animation: spin-reverse 8s linear infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes pulse-slow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.2;
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 10s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+    animation: spin-reverse-slow 12s linear infinite;
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+}
+
+/* Optimization Hints */
+.idle-float,
+.idle-pulse {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}

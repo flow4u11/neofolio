@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kim | Neo-Brutalism</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./src/css/style.css">
+
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                        'mono': ['"Space Mono"', 'monospace'],
+                    },
+                    boxShadow: {
+                        'neo': '8px 8px 0px 0px #000',
+                        'neo-white': '8px 8px 0px 0px #FFF',
+                        'neo-hover': '0px 0px 0px 0px #000',
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                        '4': '4px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-black text-white select-none overflow-x-hidden" ondragstart="return false;" ondrop="return false;">
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen"
+        class="fixed inset-0 z-[999999] bg-black flex items-center justify-center pointer-events-none">
+        <!-- Geometric Loader -->
+        <div class="relative">
+            <svg id="loader-svg" class="w-32 h-32 text-white overflow-visible" viewBox="0 0 100 100" fill="none"
+                stroke="currentColor" stroke-width="6" stroke-linejoin="miter">
+                <!-- 1. 4-Point Star -->
+                <path id="shape-1" d="M50 0 L65 35 L100 50 L65 65 L50 100 L35 65 L0 50 L35 35 Z" />
+                <!-- 2. 12-Point Burst (Neo Badge) -->
+                <path id="shape-2"
+                    d="M50 0 L63 20 L85 15 L80 38 L95 50 L80 62 L85 85 L63 80 L50 100 L37 80 L15 85 L20 62 L5 50 L20 38 L15 15 L37 20 Z"
+                    style="display:none;" />
+                <!-- 3. Pacman/Pie/Geometric Circle -->
+                <path id="shape-3" d="M100 50 A50 50 0 1 1 50 0 L50 50 Z" style="display:none;" />
+                <!-- 4. X Shape -->
+                <path id="shape-4" d="M20 20 L80 80 M80 20 L20 80" style="display:none;" />
+            </svg>
+        </div>
+
+        <!-- Bottom Status Text -->
+        <div class="absolute bottom-8 left-8 font-mono text-xs md:text-sm font-bold opacity-70">
+            <span id="loading-status">INITIALIZING SYSTEM...</span>
+            <span class="animate-pulse">_</span>
+        </div>
+    </div>
+
+    <div id="app" class="relative w-full opacity-0">
+        <!-- Global Particles Container -->
+        <div id="global-particles" class="fixed inset-0 w-full h-full pointer-events-none z-[1]"></div>
+        <!-- HEADER -->
+        <header
+            class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 md:px-12 py-4 bg-white border-b-4 border-black transition-all duration-300">
+            <!-- Left Side: Logo + Theme Toggle -->
+            <div class="flex items-center gap-6">
+                <div class="bg-black text-white px-4 py-1 transform -rotate-1 border-2 border-black">
+                    <span class="text-2xl font-black font-mono">CC>></span>
+                </div>
+
+                <!-- Theme Switcher Icon Button -->
+                <!-- Theme Dropdown Wrapper -->
+                <div class="relative z-50">
+                    <button onclick="toggleThemeDropdown()" id="theme-dropdown-btn"
+                        class="bg-white text-black h-10 px-3 flex items-center justify-center gap-2 border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+
+                        <!-- Icon (Dynamic) -->
+                        <div id="theme-btn-icon">
+                            <!-- Default: Moon -->
+                            <svg id="theme-icon-default" class="w-5 h-5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                                </path>
+                            </svg>
+                            <!-- Neo: Sun -->
+                            <svg id="theme-icon-neo" class="w-5 h-5 hidden" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <span class="font-black font-mono text-sm uppercase hidden md:block"
+                            id="theme-text">MONOCHROME</span>
+
+                        <!-- Chevron -->
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Options -->
+                    <div id="theme-dropdown-menu"
+                        class="absolute top-full left-0 mt-2 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_0px_#000] hidden flex-col">
+                        <button onclick="setTheme('default')"
+                            class="text-left px-4 py-3 font-bold text-black hover:bg-black hover:text-white border-b-2 border-black transition-colors flex items-center gap-2 group">
+                            <span class="w-3 h-3 border-2 border-black group-hover:border-white bg-black"
+                                id="indicator-default"></span>
+                            MONOCHROME
+                        </button>
+                        <button onclick="setTheme('neo')"
+                            class="text-left px-4 py-3 font-bold text-black hover:bg-black hover:text-white transition-colors flex items-center gap-2 group">
+                            <span class="w-3 h-3 border-2 border-black group-hover:border-white bg-transparent"
+                                id="indicator-neo"></span>
+                            REAL NEO
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <nav
+                class="hidden md:flex gap-4 lg:gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full items-center">
+                <a href="#hero"
+                    class="nav-link text-black font-black uppercase px-5 py-2 border-2 border-transparent hover:border-black hover:bg-white hover:shadow-[4px_4px_0px_0px_#000] hover:scale-110 transition-all duration-300">Home</a>
+                <a href="#about"
+                    class="nav-link text-black font-black uppercase px-5 py-2 border-2 border-transparent hover:border-black hover:bg-white hover:shadow-[4px_4px_0px_0px_#000] hover:scale-110 transition-all duration-300">About
+                    Me</a>
+                <a href="#works"
+                    class="nav-link text-black font-black uppercase px-5 py-2 border-2 border-transparent hover:border-black hover:bg-white hover:shadow-[4px_4px_0px_0px_#000] hover:scale-110 transition-all duration-300">Works</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <!-- Theme Switch Moved to Left -->
+
+                <a href="#contact"
+                    class="idle-pulse glare-auto bg-black text-white px-6 py-2 font-black border-2 border-black uppercase shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all hover:bg-white hover:text-black">
+                    Contact
+                </a>
+
+                <!-- Hamburger Button (Mobile) -->
+                <button onclick="toggleMobileMenu()" id="hamburger-btn"
+                    class="md:hidden bg-black text-white w-10 h-10 flex flex-col items-center justify-center gap-1.5 border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all relative z-[60]">
+                    <span class="w-6 h-0.5 bg-white block transition-all duration-300 origin-center"></span>
+                    <span class="w-6 h-0.5 bg-white block transition-all duration-300 origin-center"></span>
+                    <span class="w-6 h-0.5 bg-white block transition-all duration-300 origin-center"></span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Overlay -->
+            <div id="mobile-menu"
+                class="fixed inset-0 bg-white z-[55] flex flex-col items-center justify-center gap-8 translate-x-full transition-transform duration-500 ease-in-out md:hidden border-l-4 border-black">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-10 pointer-events-none"
+                    style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;">
+                </div>
+
+                <a href="#hero" onclick="toggleMobileMenu()"
+                    class="text-5xl font-black text-black uppercase hover:text-transparent hover:text-stroke-black transition-all transform hover:skew-x-6">Home</a>
+                <a href="#about" onclick="toggleMobileMenu()"
+                    class="text-5xl font-black text-black uppercase hover:text-transparent hover:text-stroke-black transition-all transform hover:skew-x-6">About
+                    Me</a>
+                <a href="#works" onclick="toggleMobileMenu()"
+                    class="text-5xl font-black text-black uppercase hover:text-transparent hover:text-stroke-black transition-all transform hover:skew-x-6">Works</a>
+                <a href="#contact" onclick="toggleMobileMenu()"
+                    class="text-5xl font-black text-black uppercase hover:text-transparent hover:text-stroke-black transition-all transform hover:skew-x-6">Contact</a>
+            </div>
+        </header>
+
+        <!-- HERO SECTION: Black Background -->
+        <section id="hero" data-theme="dark"
+            class="relative w-full h-screen min-h-[700px] flex flex-col justify-center items-center border-b-4 border-white bg-black [background-size:20px_20px] overflow-hidden">
+            <div
+                class="container mx-auto px-4 z-20 flex flex-col items-center justify-center text-center gap-4 relative">
+
+                <div
+                    class="bg-white border-4 border-black px-6 py-1 transform -rotate-2 shadow-[4px_4px_0px_0px_#FFF] scroll-float">
+                    <h2 class="text-lg md:text-xl font-black text-black uppercase">Hi, I’m <span
+                            class="italic">Kim</span></h2>
+                </div>
+
+                <!-- Headline -->
+                <div class="flex flex-col items-center leading-[0.9] relative group w-full max-w-6xl px-4 idle-float">
+                    <h1
+                        class="text-[clamp(1.8rem,8vw,7rem)] md:text-[5rem] lg:text-[7rem] font-black tracking-tighter text-white hover:skew-x-3 transition-transform scroll-float-text whitespace-nowrap">
+                        UI/UX DESIGNER
+                    </h1>
+                    <div class="flex items-center gap-4 my-2 scroll-float">
+                        <span class="h-1 w-8 md:w-20 bg-white block"></span>
+                        <span class="text-xl md:text-3xl font-mono text-white/50 italic">AND</span>
+                        <span class="h-1 w-8 md:w-20 bg-white block"></span>
+                    </div>
+                    <h1
+                        class="text-[clamp(2.5rem,8vw,7rem)] md:text-[5rem] lg:text-[7rem] font-black tracking-widest text-transparent text-stroke hover:text-white transition-colors duration-300 scroll-float-text whitespace-nowrap">
+                        VIDEO EDITOR
+                    </h1>
+                </div>
+
+                <!-- Description -->
+                <!-- Description Container -->
+                <div class="relative max-w-xl mt-6 scroll-float w-full">
+                    <div class="absolute -top-8 right-0 z-10">
+                        <button onclick="toggleHeroDescription(this)"
+                            class="bg-black border-2 border-white text-white text-[10px] font-mono px-3 py-1 hover:bg-white hover:text-black transition-colors uppercase flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span>+ EXPAND</span>
+                        </button>
+                    </div>
+                    <div id="hero-desc-content"
+                        class="text-gray-300 text-base md:text-lg font-mono border-l-4 border-white pl-4 text-left bg-black/50 overflow-hidden transition-all duration-300 ease-in-out"
+                        style="max-height: 0px; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;">
+                        A Junior UX/UI Designer passionate about <span class="text-white font-bold">minimalism</span>,
+                        functionality, and pixel-perfect details.
+                    </div>
+                </div>
+
+                <!-- Hire Now Button -->
+                <div class="mt-8 scroll-float mb-32">
+                    <a href="#contact" class="inline-block">
+                        <button
+                            class="idle-pulse glare-auto glare-black bg-white text-black px-10 py-4 text-2xl font-black uppercase border-4 border-black shadow-[8px_8px_0px_0px_#FFF] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all hover:bg-black hover:text-white hover:border-white">
+                            HIRE NOW
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Scroll Down Indicator (Reworked) -->
+                <a href="#about"
+                    class="idle-pulse absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-30 group cursor-pointer hover:opacity-80 transition-opacity">
+                    <span
+                        class="font-mono text-[10px] font-bold tracking-[0.3em] uppercase bg-white text-black px-3 py-1 border-2 border-white group-hover:bg-black group-hover:text-white transition-colors">
+                        SCROLL
+                    </span>
+                    <svg class="w-8 h-8 animate-bounce" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4V20M12 20L19 13M12 20L5 13" stroke="white" stroke-width="4"
+                            stroke-linecap="square" stroke-linejoin="miter" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- NEO-DECORATIONS: Hero -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none z-10">
+                <!-- Top Left Star -->
+                <svg class="neo-shape absolute top-10 left-10 w-24 h-24 text-white opacity-20 spin-slow"
+                    viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4">
+                    <path d="M50 0 L65 35 L100 50 L65 65 L50 100 L35 65 L0 50 L35 35 Z" />
+                </svg>
+                <!-- Bottom Right Burst -->
+                <svg class="neo-shape absolute bottom-20 right-10 w-32 h-32 text-white opacity-10 spin-rev-medium"
+                    viewBox="0 0 100 100" fill="currentColor">
+                    <path
+                        d="M50 0 L63 20 L85 15 L80 38 L95 50 L80 62 L85 85 L63 80 L50 100 L37 80 L15 85 L20 62 L5 50 L20 38 L15 15 L37 20 Z" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- ABOUT ME SECTION: White Background -->
+        <section id="about" data-theme="light"
+            class="relative w-full py-16 md:py-24 bg-white border-b-4 border-black text-black">
+            <div id="about-particles" class="hidden"></div> <!-- Deprecated ID, using global -->
+
+            <!-- Marquee -->
+            <div
+                class="scroll-float no-cursor-track w-full bg-black text-white py-6 border-y-4 border-black overflow-hidden mb-20 rotate-1 shadow-[8px_8px_0px_0px_#000] relative z-20">
+                <div class="whitespace-nowrap animate-marquee flex gap-12">
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                    <span class="text-7xl font-black italic">ABOUT ME</span>
+                    <span class="text-7xl font-black text-transparent text-stroke">ABOUT ME</span>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 md:px-8 xl:px-16 max-w-[1600px] relative z-20">
+                <!-- Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8">
+
+                    <!-- Profile Photo -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 lg:col-span-3 neo-card !shadow-[8px_8px_0px_0px_#000] p-0 overflow-hidden group min-h-[300px] bg-white">
+                        <div
+                            class="bg-black text-white px-2 py-1 font-mono text-xs font-bold border-b-3 border-black text-center">
+                            IMG_PROFILE_01</div>
+                        <div class="w-full h-full relative">
+                            <img src="./assets/profile-pic.png"
+                                onerror="this.src='https://placehold.co/400x400/222/FFF?text=KIM'"
+                                class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-300 absolute inset-0" />
+                        </div>
+                    </div>
+
+                    <!-- Information Card -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 lg:col-span-4 bg-black border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 text-white flex flex-col justify-center transform hover:-translate-y-1 transition-transform min-h-[300px]">
+                        <h3
+                            class="text-2xl lg:text-3xl font-black mb-6 uppercase border-b-4 border-white inline-block w-fit">
+                            Information</h3>
+                        <div class="space-y-4 font-mono text-base lg:text-lg">
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Name:</span> <span>Chayathorn Chianpolsane</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Edu:</span> <span>Bangkok University</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Loc:</span> <span>Thailand</span></p>
+                            <p class="flex justify-between border-b border-white/20 pb-1 scroll-float"><span
+                                    class="font-bold">Lang:</span> <span>EN / TH</span></p>
+                        </div>
+                    </div>
+
+                    <!-- What I do? -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-2 lg:col-span-5 neo-card !shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex flex-col justify-center gap-6 min-h-[300px]">
+                        <h3
+                            class="text-3xl lg:text-4xl font-black uppercase bg-black text-white inline-block px-2 transform -rotate-1 w-fit">
+                            What I do?</h3>
+                        <p class="text-base lg:text-lg font-bold leading-relaxed text-black">
+                            Junior <span class="bg-black text-white px-1">UX/UI Designer</span> building intuitive apps.
+                            <br><br>
+                            Video Editor creating <span class="underline decoration-4">gaming montages</span> with
+                            rhythm & flow.
+                        </p>
+                    </div>
+
+                    <!-- Skills & Tools -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-2 lg:col-span-5 neo-card !shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 bg-zinc-100 min-h-[300px]">
+                        <h3 class="text-2xl lg:text-3xl font-black mb-6 uppercase flex items-center gap-2 text-black">
+                            <span class="w-4 h-4 bg-black"></span> Skills
+                        </h3>
+                        <div class="flex flex-col gap-4">
+                            <div
+                                class="flex items-center gap-4 border-2 border-black p-3 bg-white hover:bg-black hover:text-white transition-colors group relative z-10">
+                                <img src="./assets/figma-logo.png" onerror="this.style.display='none'"
+                                    class="w-10 h-10 object-contain group-hover:invert">
+                                <div>
+                                    <h4 class="font-black text-lg lg:text-xl">FIGMA</h4>
+                                    <p class="font-mono text-xs font-bold">High-fidelity UI & Systems</p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center gap-4 border-2 border-black p-3 bg-white hover:bg-black hover:text-white transition-colors group relative z-10">
+                                <img src="./assets/davinci-logo.png" onerror="this.style.display='none'"
+                                    class="w-10 h-10 object-contain group-hover:invert">
+                                <div>
+                                    <h4 class="font-black text-lg lg:text-xl">DAVINCI</h4>
+                                    <p class="font-mono text-xs font-bold">Editing & Visual Effects</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aesthetics -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 lg:col-span-4 bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex flex-col justify-center items-center text-center hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer min-h-[300px]">
+                        <div class="font-mono text-sm font-bold bg-black text-white px-2 mb-2">Neo-Brutalism</div>
+                        <div class="text-3xl lg:text-4xl font-black uppercase text-black scroll-float-text">Minimalist
+                        </div>
+                        <div
+                            class="mt-4 text-2xl lg:text-3xl font-black bg-black text-white px-4 py-2 rotate-2 border-2 border-black scroll-float-text">
+                            Dark Mode</div>
+                    </div>
+
+                    <!-- Experience Placeholder -->
+                    <div
+                        class="scroll-float glare-hover md:col-span-1 lg:col-span-3 bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 lg:p-8 flex items-center justify-center text-center relative overflow-hidden min-h-[300px]">
+                        <div class="absolute inset-0 opacity-5"
+                            style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 10px 10px;">
+                        </div>
+                        <div class="z-10">
+                            <p class="text-lg lg:text-xl font-bold font-mono text-gray-600">Status:</p>
+                            <p
+                                class="text-2xl lg:text-3xl font-black uppercase text-black underline decoration-4 decoration-black mt-2">
+                                Looking for Experience...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NEO-DECORATIONS: About -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none z-10">
+                <!-- Floating X (Left) -->
+                <svg class="neo-shape absolute top-1/3 left-4 w-20 h-20 text-black opacity-10 spin-fast"
+                    viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="8">
+                    <path d="M20 20 L80 80 M80 20 L20 80" />
+                </svg>
+                <!-- Spin Star (Right) -->
+                <svg class="neo-shape absolute bottom-20 right-4 w-28 h-28 text-black opacity-10 spin-rev-slow"
+                    viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M50 0 L65 35 L100 50 L65 65 L50 100 L35 65 L0 50 L35 35 Z" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- SHOWCASE SECTION: Black Background -->
+        <section id="works" data-theme="dark"
+            class="relative w-full min-h-screen bg-black text-white py-16 md:py-24 border-t-4 border-white">
+            <div class="text-center mb-20 relative w-full overflow-hidden z-20">
+                <!-- Background Texture -->
+                <div class="absolute inset-0 opacity-20 pointer-events-none"
+                    style="background-image: linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222), linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222); background-size: 20px 20px; background-position: 0 0, 10px 10px;">
+                </div>
+
+                <h2
+                    class="text-[12rem] font-black text-white/5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none whitespace-nowrap scroll-float">
+                    SHOWCASE</h2>
+                <h2
+                    class="idle-float text-7xl md:text-9xl font-black text-white relative z-10 uppercase italic scroll-float-text">
+                    Showcase</h2>
+            </div>
+
+            <div
+                class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-[1440px] relative z-20">
+                <!-- Project 1 -->
+                <div onclick="openProjectModal(1)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform -rotate-6">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">01</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Website Redesign</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">UI/UX</span>
+                                <span class="border-2 border-black px-2 py-1">2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div onclick="openProjectModal(2)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform rotate-3">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">02</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Mobile App</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">PROTOTYPE</span>
+                                <span class="border-2 border-black px-2 py-1">2024</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div onclick="openProjectModal(3)" class="group cursor-pointer scroll-float">
+                    <div
+                        class="glare-hover relative bg-white border-4 border-white shadow-[10px_10px_0px_0px_#333] mb-6 transition-all group-hover:translate-x-2 group-hover:translate-y-2 group-hover:shadow-none">
+                        <div class="aspect-video bg-zinc-900 border-b-4 border-black relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <span
+                                    class="text-3xl font-black text-white border-4 border-white px-6 py-2 transform -rotate-2">VIEW
+                                    PROJECT</span>
+                            </div>
+                            <span class="absolute top-2 left-2 text-white/20 text-8xl font-black leading-none">03</span>
+                        </div>
+                        <div class="p-6 bg-white text-black">
+                            <h3 class="text-2xl font-black uppercase mb-2">Gaming Montage</h3>
+                            <div class="flex gap-2 font-mono text-xs font-bold">
+                                <span class="bg-black text-white px-2 py-1">VIDEO</span>
+                                <span class="border-2 border-black px-2 py-1">2023</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEO-DECORATIONS: Works -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none z-10">
+                <!-- Pacman Shape (Top Left) -->
+                <svg class="neo-shape absolute top-20 left-10 w-32 h-32 text-white opacity-10 spin-medium"
+                    viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M100 50 A50 50 0 1 1 50 0 L50 50 Z" />
+                </svg>
+                <!-- Burst (Bottom Middle) -->
+                <svg class="neo-shape absolute bottom-10 left-1/2 -translate-x-1/2 w-40 h-40 text-white opacity-5 spin-rev-fast"
+                    viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M50 0 L63 20 L85 15 L80 38 L95 50 L80 62 L85 85 L63 80 L50 100 L37 80 L15 85 L20 62 L5 50 L20 38 L15 15 L37 20 Z" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION: White Background -->
+        <section id="contact" data-theme="light"
+            class="relative w-full min-h-[80vh] bg-white text-black flex flex-col justify-center items-center py-20 border-t-4 border-black">
+
+            <div class="text-center mb-12 relative w-full z-10">
+                <h2
+                    class="idle-float text-[clamp(2.5rem,10vw,8rem)] md:text-[8rem] font-black text-black mb-8 uppercase tracking-tighter mix-blend-multiply scroll-float-text">
+                    CONTACT</h2>
+            </div>
+
+            <div
+                class="scroll-float bg-black text-white border-4 border-black p-12 shadow-[12px_12px_0px_0px_#000] rotate-1 hover:rotate-0 transition-transform duration-300 max-w-2xl w-full mx-4 relative z-10">
+                <div
+                    class="absolute -top-6 -right-6 bg-white text-black border-3 border-black p-2 font-black rotate-12 shadow-neo">
+                    OPEN TO WORK</div>
+
+                <!-- WRAPPER: Contact Options -->
+                <div id="contact-options" class="transition-all duration-300">
+                    <h3 class="text-4xl font-black mb-8 border-b-4 border-white pb-4">GET IN TOUCH</h3>
+
+                    <div class="flex flex-col gap-6">
+                        <a href="#"
+                            class="text-2xl font-bold flex items-center gap-4 hover:bg-white hover:text-black hover:px-2 transition-all group relative z-10">
+                            <span
+                                class="w-8 h-8 rounded-none border-2 border-white flex items-center justify-center text-xs font-mono group-hover:border-black group-hover:bg-black group-hover:text-white">D</span>
+                            Discord @Flow4u
+                        </a>
+                        <a href="mailto:daffodz1@gmail.com"
+                            class="text-2xl font-bold flex items-center gap-4 hover:bg-white hover:text-black hover:px-2 transition-all group relative z-10">
+                            <span
+                                class="w-8 h-8 rounded-none border-2 border-white flex items-center justify-center text-xs font-mono group-hover:border-black group-hover:bg-black group-hover:text-white">@</span>
+                            daffodz1@gmail.com
+                        </a>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t-2 border-white/30">
+                        <button onclick="toggleContactForm(true)"
+                            class="idle-pulse glare-auto glare-black w-full bg-white text-black font-black py-4 uppercase border-4 border-transparent hover:border-black hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_#333] hover:shadow-none hover:translate-x-1 hover:translate-y-1">
+                            Send a Message
+                        </button>
+                    </div>
+                </div>
+
+                <!-- WRAPPER: Contact Form (Hidden by default) -->
+                <div id="contact-form" class="hidden transition-all duration-300">
+                    <div class="flex items-center justify-between mb-8 border-b-4 border-white pb-4">
+                        <h3 class="text-3xl font-black">MESSAGE ME</h3>
+                        <button onclick="toggleContactForm(false)"
+                            class="text-sm font-bold underline hover:no-underline hover:bg-white hover:text-black px-2 py-1 transition-colors">
+                            [ BACK ]
+                        </button>
+                    </div>
+
+                    <form class="flex flex-col gap-4" novalidate
+                        onsubmit="event.preventDefault(); submitMessage(this);">
+                        <!-- Name -->
+                        <div class="relative group">
+                            <label class="font-mono text-xs font-bold uppercase mb-1 block opacity-70">Name</label>
+                            <input type="text" name="name" required
+                                class="w-full bg-black border-2 border-white p-3 text-white font-bold outline-none focus:bg-white focus:text-black focus:border-black transition-colors placeholder:text-zinc-600"
+                                placeholder="YOUR NAME">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="relative group">
+                            <label class="font-mono text-xs font-bold uppercase mb-1 block opacity-70">Email</label>
+                            <input type="email" name="email" required
+                                class="w-full bg-black border-2 border-white p-3 text-white font-bold outline-none focus:bg-white focus:text-black focus:border-black transition-colors placeholder:text-zinc-600"
+                                placeholder="YOUR@EMAIL.COM">
+                        </div>
+
+                        <!-- Message -->
+                        <div class="relative group">
+                            <label class="font-mono text-xs font-bold uppercase mb-1 block opacity-70">Message</label>
+                            <textarea name="message" rows="4" required
+                                class="w-full bg-black border-2 border-white p-3 text-white font-bold outline-none focus:bg-white focus:text-black focus:border-black transition-colors placeholder:text-zinc-600 resize-none"
+                                placeholder="WHAT'S ON YOUR MIND?"></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit"
+                            class="mt-4 w-full bg-white text-black font-black py-4 uppercase border-4 border-transparent hover:border-black hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_#333] hover:shadow-none hover:translate-x-1 hover:translate-y-1">
+                            SEND IT
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- NEO-DECORATIONS: Contact -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none z-[2]">
+                <!-- Big X (Top Right) -->
+                <svg class="neo-shape absolute top-10 right-10 w-40 h-40 text-black opacity-5 spin-rev-medium"
+                    viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="10">
+                    <path d="M20 20 L80 80 M80 20 L20 80" />
+                </svg>
+                <!-- Star (Bottom Left) -->
+                <svg class="neo-shape absolute bottom-20 left-10 w-24 h-24 text-black opacity-10 spin-slow"
+                    viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M50 0 L65 35 L100 50 L65 65 L50 100 L35 65 L0 50 L35 35 Z" />
+                </svg>
+            </div>
+
+            <footer class="absolute bottom-4 text-black font-mono font-bold text-xs uppercase z-10">
+                © 2025 MY PORTFOLIO. Neo-Brutalism.
+            </footer>
+        </section>
+
+    </div>
+
+    <!-- SIDE NAVIGATION (Page Counter) -->
+    <div class="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-4 mix-blend-difference">
+        <a href="#hero" class="side-link w-4 h-4 border-2 border-white bg-black transition-all duration-300"
+            title="Home"></a>
+        <a href="#about" class="side-link w-4 h-4 border-2 border-white bg-black transition-all duration-300"
+            title="About"></a>
+        <a href="#works" class="side-link w-4 h-4 border-2 border-white bg-black transition-all duration-300"
+            title="Works"></a>
+        <a href="#contact" class="side-link w-4 h-4 border-2 border-white bg-black transition-all duration-300"
+            title="Contact"></a>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="neo-toast"
+        class="fixed top-24 right-4 md:right-8 z-[200] translate-x-[200%] transition-transform duration-500 ease-out">
+        <div
+            class="bg-black text-white border-4 border-white shadow-[8px_8px_0px_0px_#333] p-6 max-w-sm flex items-start gap-4">
+            <!-- Icon -->
+            <div class="text-red-500 font-bold text-2xl leading-none">!</div>
+            <!-- Text -->
+            <div>
+                <h4 class="font-black text-lg uppercase leading-none mb-1">ERROR</h4>
+                <p class="font-mono text-sm leading-tight text-zinc-400">Please fill in all fields.</p>
+            </div>
+            <!-- Close -->
+            <button onclick="hideToast()"
+                class="text-white hover:text-red-500 font-bold ml-auto leading-none">X</button>
+        </div>
+    </div>
+
+    <!-- Custom Cursor Markup -->
+    <div id="target-cursor"
+        class="fixed top-0 left-0 w-0 h-0 pointer-events-none z-[100001] hidden md:block mix-blend-difference">
+        <!-- Center Dot -->
+        <div class="relative">
+            <div
+                class="cursor-dot absolute top-1/2 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 before:content-[''] before:absolute before:-inset-8 before:rounded-full">
+            </div>
+            <!-- Corners -->
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(-150%, -150%); border-right: 0; border-bottom: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(50%, -150%); border-left: 0; border-bottom: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(50%, 50%); border-left: 0; border-top: 0;"></div>
+            <div class="target-cursor-corner absolute top-1/2 left-1/2 w-3 h-3 border-[3px] border-white z-10"
+                style="transform: translate(-150%, 50%); border-right: 0; border-top: 0;"></div>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL (New) -->
+    <div id="project-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-sm" onclick="closeProjectModal()"></div>
+
+        <!-- Content Container -->
+        <div
+            class="relative w-full max-w-7xl h-[85vh] bg-white border-4 border-black shadow-[8px_8px_0px_0px_#333] flex flex-col overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center p-6 border-b-4 border-black bg-white z-10 shrink-0">
+                <div>
+                    <h3 id="modal-title"
+                        class="text-2xl md:text-4xl font-black uppercase tracking-tighter mix-blend-multiply text-black">
+                        PROJECT TITLE</h3>
+                    <div class="flex gap-3 mt-2 font-mono text-xs font-bold text-black">
+                        <span id="modal-category" class="bg-black text-white px-2 py-1">CATEGORY</span>
+                        <span id="modal-year" class="border-2 border-black px-2 py-1">YEAR</span>
+                    </div>
+                </div>
+                <button onclick="closeProjectModal()"
+                    class="w-12 h-12 flex items-center justify-center border-4 border-black bg-black text-white hover:bg-red-600 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Gallery / Swipe Area -->
+            <div id="modal-gallery"
+                class="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-hidden scrollbar-hide bg-zinc-100 items-center">
+                <!-- Images injected here -->
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button id="modal-prev"
+                class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white text-black border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-y-[-45%] hover:shadow-none transition-all disabled:opacity-0 disabled:pointer-events-none group"
+                onclick="scrollModal(-1)">
+                <svg class="w-6 h-6 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button id="modal-next"
+                class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-white text-black border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-y-[-45%] hover:shadow-none transition-all disabled:opacity-0 disabled:pointer-events-none group"
+                onclick="scrollModal(1)">
+                <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="4" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <!-- Footer / Instructions -->
+            <div class="absolute bottom-6 left-0 w-full flex justify-center gap-4 pointer-events-none">
+                <div
+                    class="bg-black/80 text-white px-4 py-2 font-mono text-xs font-bold pointer-events-auto backdrop-blur-md rounded-full border border-white/20 flex items-center gap-4">
+                    <span>SWIPE / SCROLL TO VIEW</span>
+                    <span class="w-px h-3 bg-white/50"></span>
+                    <span id="modal-counter">01 / 03</span>
+                </div>
+                <!-- Progress Line -->
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-zinc-200">
+                    <div id="modal-progress" class="h-full bg-black w-0 transition-all duration-300 ease-out"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="./src/js/loader.js"></script>
+    <script src="./src/js/particles.js"></script>
+    <script src="./src/js/interactions.js"></script>
+    <script src="./src/js/effects.js"></script>
+    <script src="./src/js/modal.js"></script>
+    <script src="./src/js/navigation.js"></script>
+    <script src="./src/js/background.js"></script>
+</body>
+
+</html>
