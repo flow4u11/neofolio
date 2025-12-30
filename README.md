@@ -40,8 +40,3 @@ If you are uploading this project to GitHub manually (via the website):
     *   `vite.config.js` (if it exists)
     *   `README.md`
     *   `.gitignore`
-
-2.  **DO NOT Select/Upload:**
-    *   `node_modules` (This folder is huge and automatically installed via code)
-    *   `dist` (This is the build output, not source code)
-    *   `.vscode` (Local editor settings)
