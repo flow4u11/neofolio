@@ -43,26 +43,57 @@ window.toggleHeroDescription = (btn) => {
 };
 
 // --- CONTACT FORM TOGGLE ---
-// --- CONTACT FORM TOGGLE ---
 window.toggleContactForm = (show) => {
     const options = document.getElementById('contact-options');
     const form = document.getElementById('contact-form');
+    const contactTitle = document.querySelector('#contact h2');
+    const contactCard = document.querySelector('#contact .scroll-float');
     const contactSection = document.getElementById('contact');
 
-    // Instant Toggle (No Animation)
     if (show) {
+        // Hide options, show form
         options.classList.add('hidden');
         form.classList.remove('hidden');
+
+        // Animate: Shrink title and center content
+        if (typeof gsap !== 'undefined') {
+            gsap.to(contactTitle, {
+                scale: 0.5,
+                opacity: 0.3,
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+
+            // Add centered class to section
+            contactSection.classList.add('justify-center');
+            contactSection.classList.remove('justify-start');
+        } else {
+            // Fallback without GSAP
+            contactTitle.style.transform = 'scale(0.5)';
+            contactTitle.style.opacity = '0.3';
+        }
     } else {
+        // Hide form, show options
         form.classList.add('hidden');
         options.classList.remove('hidden');
-    }
 
-    // Auto-scroll to center
-    // Small timeout to allow DOM repaint
-    setTimeout(() => {
-        contactSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 50);
+        // Restore title
+        if (typeof gsap !== 'undefined') {
+            gsap.to(contactTitle, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+
+            // Remove centered class
+            contactSection.classList.remove('justify-center');
+            contactSection.classList.add('justify-start');
+        } else {
+            contactTitle.style.transform = 'scale(1)';
+            contactTitle.style.opacity = '1';
+        }
+    }
 };
 
 // --- TOAST LOGIC ---

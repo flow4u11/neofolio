@@ -1,42 +1,36 @@
-# MY PORTFOLIO
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-I have created my portfolio based on the provided design.
+## Getting Started
 
-## How to View
+First, run the development server:
 
-### Option 1: Quick View (Recommended if you cannot run npm)
-Open the file **`index.html`** in your browser.
-This version uses the Tailwind CSS CDN and works instantly without any installation.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-### Option 2: Production Build (Vite)
-This project is set up as a standard **Vite + Tailwind** application for better performance and future development.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-If you have Node.js installed and can run scripts:
-1. Open a terminal in this folder.
-2. Run `npm install` (to install dependencies).
-3. Run `npm run dev` (to start the development server).
-4. Open the localhost link provided.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-**Note:** If you see "running scripts is disabled on this system" errors in PowerShell, use `cmd` or bypass the policy, or stick to Option 1.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Design Features
-- **Responsive Layout**: Works on mobile and desktop.
-- **Tailwind CSS**: Used for all styling.
-- **Poppins Font**: Integrated from Google Fonts.
-- **Section Structure**: Hero, About (Bento Grid), Showcase, Contact.
+## Learn More
 
-## Uploading to GitHub
+To learn more about Next.js, take a look at the following resources:
 
-If you are uploading this project to GitHub manually (via the website):
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-1.  **Select these files/folders:**
-    *   `src` (folder)
-    *   `assets` (folder)
-    *   `index.html`
-    *   `package.json`
-    *   `package-lock.json`
-    *   `postcss.config.js`
-    *   `tailwind.config.js`
-    *   `vite.config.js` (if it exists)
-    *   `README.md`
-    *   `.gitignore`
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

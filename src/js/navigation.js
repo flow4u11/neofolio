@@ -46,44 +46,58 @@ window.setTheme = (themeName) => {
     const indicatorNeo = document.getElementById('indicator-neo');
     const dropdown = document.getElementById('theme-dropdown-menu');
 
+    // Clear all theme classes first
+    document.body.classList.remove('real-neo-theme');
+
+    // Hide all icons first
+    if (defaultIcon) defaultIcon.classList.add('hidden');
+    if (neoIcon) neoIcon.classList.add('hidden');
+
+    // Reset all indicators
+    if (indicatorDefault) {
+        indicatorDefault.classList.remove('bg-black');
+        indicatorDefault.classList.add('bg-transparent');
+    }
+    if (indicatorNeo) {
+        indicatorNeo.classList.remove('bg-black');
+        indicatorNeo.classList.add('bg-transparent');
+    }
+
     if (themeName === 'neo') {
         // Activate Neo
         document.body.classList.add('real-neo-theme');
         localStorage.setItem('theme', 'neo');
 
         // Update UI
-        defaultIcon.classList.add('hidden');
-        neoIcon.classList.remove('hidden');
-        themeText.textContent = "REAL NEO";
+        if (neoIcon) neoIcon.classList.remove('hidden');
+        if (themeText) themeText.textContent = "REAL NEO";
 
-        // Indicators
-        indicatorDefault.classList.remove('bg-black');
-        indicatorDefault.classList.add('bg-transparent');
-
-        indicatorNeo.classList.remove('bg-transparent');
-        indicatorNeo.classList.add('bg-black');
+        // Indicator
+        if (indicatorNeo) {
+            indicatorNeo.classList.remove('bg-transparent');
+            indicatorNeo.classList.add('bg-black');
+        }
 
     } else {
-        // Activate Default
-        document.body.classList.remove('real-neo-theme');
+        // Activate Default (Monochrome)
         localStorage.setItem('theme', 'default');
 
         // Update UI
-        defaultIcon.classList.remove('hidden');
-        neoIcon.classList.add('hidden');
-        themeText.textContent = "MONOCHROME";
+        if (defaultIcon) defaultIcon.classList.remove('hidden');
+        if (themeText) themeText.textContent = "MONOCHROME";
 
-        // Indicators
-        indicatorDefault.classList.remove('bg-transparent');
-        indicatorDefault.classList.add('bg-black');
-
-        indicatorNeo.classList.remove('bg-black');
-        indicatorNeo.classList.add('bg-transparent');
+        // Indicator
+        if (indicatorDefault) {
+            indicatorDefault.classList.remove('bg-transparent');
+            indicatorDefault.classList.add('bg-black');
+        }
     }
 
     // Close Dropdown
-    dropdown.classList.add('hidden');
-    dropdown.classList.remove('flex');
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+        dropdown.classList.remove('flex');
+    }
 };
 
 // Close dropdown when clicking outside
@@ -97,7 +111,6 @@ window.addEventListener('click', (e) => {
 });
 
 // --- SMOOTH SCROLLING FOR ANCHOR LINKS (GSAP) ---
-// --- SMOOTH SCROLLING FOR ANCHOR LINKS (GSAP) ---
 // Global Event Delegation handles all current and future links
 document.addEventListener('click', (e) => {
     const anchor = e.target.closest('a[href^="#"]');
@@ -110,10 +123,46 @@ document.addEventListener('click', (e) => {
         const targetElement = targetId === '#' ? document.body : document.querySelector(targetId);
 
         if (targetElement) {
+            // Smooth scroll to target
             gsap.to(window, {
-                duration: 1.2,
-                scrollTo: { y: targetElement, autoKill: false },
-                ease: "power3.inOut" // Smoother easing
+                duration: 1.0,
+                scrollTo: {
+                    y: targetElement,
+                    autoKill: false
+                },
+                ease: "power2.inOut",
+                onStart: () => {
+                    // Force complete animations for elements in/before target section
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        try {
+                            const targetRect = targetElement.getBoundingClientRect();
+                            const targetY = targetRect.top + window.scrollY;
+
+                            ScrollTrigger.getAll().forEach(st => {
+                                if (st.trigger) {
+                                    const triggerRect = st.trigger.getBoundingClientRect();
+                                    const triggerY = triggerRect.top + window.scrollY;
+
+                                    // Complete animations for elements above or at target
+                                    if (triggerY <= targetY + window.innerHeight) {
+                                        if (st.animation) {
+                                            st.animation.progress(1);
+                                        }
+                                    }
+                                }
+                            });
+                        } catch (err) {
+                            // Silently fail - scrolling still works
+                            console.log('Animation skip failed, continuing scroll');
+                        }
+                    }
+                },
+                onComplete: () => {
+                    // Refresh after scroll
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        ScrollTrigger.refresh();
+                    }
+                }
             });
         }
 
@@ -157,17 +206,17 @@ const initActiveNav = () => {
 
     const setSideActive = (id) => {
         sideLinks.forEach(l => {
-            // Reset to default state
-            l.classList.remove('h-12', 'bg-white');
-            l.classList.add('h-4', 'bg-black');
+            // Reset to default state (only height, not background - effects.js handles bg-white)
+            l.classList.remove('h-12');
+            l.classList.add('h-4');
         });
 
         if (id) {
             const activeSide = document.querySelector(`.side-link[href="#${id}"]`);
             if (activeSide) {
-                // Apply Active Transform
-                activeSide.classList.remove('h-4', 'bg-black');
-                activeSide.classList.add('h-12', 'bg-white');
+                // Apply Active Transform (only height)
+                activeSide.classList.remove('h-4');
+                activeSide.classList.add('h-12');
             }
         }
     };

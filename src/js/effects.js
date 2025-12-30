@@ -189,14 +189,25 @@ autoElements.forEach(el => {
     setTimeout(animate, Math.random() * 1000 + 500);
 });
 
-// --- SCROLL FLOAT ANIMATION LOGIC (GSAP) ---
+// --- NEO-BRUTALIST SCROLL ANIMATIONS (SMOOTH & REVERSIBLE) ---
+let scrollAnimsInitialized = false;
 const initScrollAnimations = () => {
     if (typeof ScrollTrigger === 'undefined') return;
 
-    // 1. STANDARD ANIMATIONS (Hero, About, Works)
-    // Use "once: true" to prevent bugs and disappearing content
+    // Prevent duplicate initialization
+    if (scrollAnimsInitialized) return;
+    scrollAnimsInitialized = true;
 
-    // 1.1 Text Splitter
+    // ========================================
+    // SHARED CONFIG: Smooth easing for all
+    // ========================================
+    const smoothEase = 'power2.inOut';
+    const smoothDuration = 0.8;
+
+    // ========================================
+    // 1. SMOOTH TEXT REVEAL (Hero Headlines)
+    // Characters cascade in smoothly with wave effect
+    // ========================================
     document.querySelectorAll('.scroll-float-text').forEach(el => {
         if (el.hasAttribute('data-anim-init')) return;
         el.setAttribute('data-anim-init', 'true');
@@ -205,139 +216,356 @@ const initScrollAnimations = () => {
         if (!text) return;
 
         el.textContent = '';
-        const chars = text.split('').map(char => {
+        el.style.overflow = 'visible';
+
+        const chars = text.split('').map((char, i) => {
             const span = document.createElement('span');
-            span.style.display = 'inline-block';
+            span.className = 'neo-char';
+            span.style.cssText = `
+                display: inline-block;
+                transform-origin: center center;
+                will-change: transform, opacity;
+            `;
             span.textContent = char === ' ' ? '\u00A0' : char;
             el.appendChild(span);
             return span;
         });
 
-        // Simple Reveal (Replayable & Robust)
-        // Set initial state via GSAP set to avoid "from" logic issues during refresh
-        gsap.set(chars, { opacity: 0, y: 30 });
+        // Initial state: below with slight blur
+        gsap.set(chars, {
+            opacity: 0,
+            y: 40,
+            rotationX: -45,
+            scale: 0.9
+        });
 
+        // Instant reveal on enter - reversible on scroll up
         gsap.to(chars, {
             scrollTrigger: {
                 trigger: el,
-                start: 'top 95%',
-                end: 'bottom top',
-                toggleActions: "play none play reverse" // Enter:Play, Leave:None, EnterBack:Play, LeaveBack:Reverse
+                start: 'top 90%',
+                toggleActions: 'play reverse play reverse',
             },
             opacity: 1,
             y: 0,
-            duration: 1.0,
+            rotationX: 0,
+            scale: 1,
+            duration: 0.6,
             stagger: 0.02,
-            ease: 'power2.out',
-            overwrite: 'auto'
+            ease: 'power2.out'
         });
     });
 
-    // 1.2 Generic Float
-    document.querySelectorAll('.scroll-float, .scroll-text').forEach(el => {
+    // ========================================
+    // 2. SMOOTH FLOAT-IN (Generic Elements)
+    // Elements glide in from below with parallax feel
+    // ========================================
+    document.querySelectorAll('.scroll-float:not(.no-stamp)').forEach(el => {
         if (el.hasAttribute('data-anim-init')) return;
         el.setAttribute('data-anim-init', 'true');
 
-        gsap.set(el, { autoAlpha: 0, y: 50 });
+        // Consistent smooth entry from below
+        gsap.set(el, {
+            autoAlpha: 0,
+            y: 40,
+            scale: 0.98,
+            transformOrigin: 'center center'
+        });
 
+        // Instant animation on enter
         gsap.to(el, {
             scrollTrigger: {
                 trigger: el,
-                start: 'top 90%',
-                end: 'bottom top',
-                toggleActions: "play none play reverse"
+                start: 'top 92%',
+                toggleActions: 'play reverse play reverse',
             },
             autoAlpha: 1,
             y: 0,
-            duration: 1.0,
-            ease: 'power2.out',
-            overwrite: 'auto'
+            scale: 1,
+            duration: 0.5,
+            ease: 'power2.out'
         });
     });
 
-    // 1.3 ABOUT SECTION (Bento Grid Stagger)
+    // ========================================
+    // 3. ALTERNATING SLIDE (Bento Grid Cards)
+    // Cards slide in from alternating sides smoothly
+    // ========================================
     const aboutCards = gsap.utils.toArray('#about .grid > div');
     if (aboutCards.length > 0) {
-        // Initial state
-        gsap.set(aboutCards, { autoAlpha: 0, y: 50 });
+        aboutCards.forEach((card, i) => {
+            // Alternating directions: odd from left, even from right
+            const fromLeft = i % 2 === 0;
+            const offsetX = fromLeft ? -50 : 50;
 
-        // Use batch to handle group entering
-        ScrollTrigger.batch(aboutCards, {
-            start: "top 85%",
-            onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.1, ease: "power2.out", overwrite: true }),
-            onLeaveBack: batch => gsap.to(batch, { autoAlpha: 0, y: 50, duration: 0.8, stagger: 0.05, ease: "power2.in", overwrite: true }),
-            // Ensure state persists correctly
-            onEnterBack: batch => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.1, ease: "power2.out", overwrite: true })
+            gsap.set(card, {
+                autoAlpha: 0,
+                x: offsetX,
+                y: 20,
+                rotation: fromLeft ? -2 : 2,
+                scale: 0.98
+            });
+
+            // Instant animation with slight stagger delay
+            gsap.to(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 95%',
+                    toggleActions: 'play reverse play reverse',
+                },
+                autoAlpha: 1,
+                x: 0,
+                y: 0,
+                rotation: 0,
+                scale: 1,
+                duration: 0.5,
+                delay: i * 0.05,
+                ease: 'power2.out'
+            });
         });
     }
 
-    // 1.4 WORKS SECTION (Project Cards Stagger)
+    // ========================================
+    // 4. SMOOTH RISE (Works/Showcase Cards)
+    // Project cards rise up with slight depth effect
+    // ========================================
     const workItems = gsap.utils.toArray('#works .group');
     if (workItems.length > 0) {
-        gsap.set(workItems, { autoAlpha: 0, y: 60 });
+        workItems.forEach((item, i) => {
+            gsap.set(item, {
+                autoAlpha: 0,
+                y: 50,
+                scale: 0.95
+            });
 
-        ScrollTrigger.batch(workItems, {
-            start: "top 80%",
-            onEnter: batch => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.15, ease: "power2.out", overwrite: true }),
-            onLeaveBack: batch => gsap.to(batch, { autoAlpha: 0, y: 60, duration: 0.8, stagger: 0.1, ease: "power2.in", overwrite: true }),
-            onEnterBack: batch => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.15, ease: "power2.out", overwrite: true })
+            // Instant animation on enter
+            gsap.to(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 95%',
+                    toggleActions: 'play reverse play reverse',
+                },
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                delay: i * 0.08,
+                ease: 'power2.out'
+            });
         });
     }
 
-    // Force refresh after short delay to catch any layout shifts
-    setTimeout(() => ScrollTrigger.refresh(), 500);
+    // ========================================
+    // 5. MARQUEE EXPAND (About Marquee)
+    // The marquee expands from center smoothly
+    // ========================================
+    const marquee = document.querySelector('#about .animate-marquee')?.closest('.scroll-float');
+    if (marquee && !marquee.hasAttribute('data-marquee-anim')) {
+        marquee.setAttribute('data-marquee-anim', 'true');
 
-    // 2. CONTACT SECTION STACKING
-    // We pin the Contact section so the Footer/ThankYou section slides over it.
+        gsap.set(marquee, {
+            autoAlpha: 0,
+            scaleX: 0.5,
+            transformOrigin: 'center center'
+        });
+
+        gsap.to(marquee, {
+            scrollTrigger: {
+                trigger: marquee,
+                start: 'top 95%',
+                toggleActions: 'play reverse play reverse',
+            },
+            autoAlpha: 1,
+            scaleX: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+        });
+    }
+
+    // ========================================
+    // 6. CONTACT SECTION STACKING (Stack Scroll)
+    // Pin effect with content moving up as Credits slides over
+    // ========================================
     const contact = document.querySelector('#contact') || document.querySelector('#section-contact');
 
     if (contact) {
+        const contactContent = contact.querySelector('.scroll-float');
+        const contactTitle = contact.querySelector('h2');
+
+        // Pin the contact section
         ScrollTrigger.create({
             trigger: contact,
             start: "top top",
             pin: true,
-            pinSpacing: false, // Allows the next element (Credits) to slide UP over it without pushing it down
-            end: "bottom top", // Pin for the duration of its height (effectively until next one covers it)
+            pinSpacing: false,
+            end: "bottom top",
             anticipatePin: 1,
-            id: 'contact-stack'
+            id: 'contact-stack',
+            onUpdate: (self) => {
+                // Move content up as user scrolls to credits
+                const progress = self.progress;
+                if (contactContent) {
+                    gsap.set(contactContent, {
+                        y: -progress * 150, // Move up by 150px as scroll progresses
+                        opacity: 1 - (progress * 0.5) // Fade slightly
+                    });
+                }
+                if (contactTitle) {
+                    gsap.set(contactTitle, {
+                        y: -progress * 100, // Title moves up faster
+                        scale: 1 - (progress * 0.2), // Shrink slightly
+                        opacity: 1 - (progress * 0.6)
+                    });
+                }
+            },
+            onLeaveBack: () => {
+                // Reset when scrolling back up
+                if (contactContent) {
+                    gsap.to(contactContent, { y: 0, opacity: 1, duration: 0.3 });
+                }
+                if (contactTitle) {
+                    gsap.to(contactTitle, { y: 0, scale: 1, opacity: 1, duration: 0.3 });
+                }
+            }
         });
     }
 
-    ScrollTrigger.refresh();
+    // ========================================
+    // 7. CREDITS SECTION REVEAL (Smooth)
+    // Grand reveal with smooth scale + fade
+    // ========================================
+    const credits = document.querySelector('#credits');
+    if (credits) {
+        const creditsCards = credits.querySelectorAll('.neo-card');
+        const creditsTitle = credits.querySelector('h2');
+
+        // Title animation: Instant scale down
+        if (creditsTitle) {
+            gsap.set(creditsTitle, {
+                autoAlpha: 0,
+                scale: 1.3,
+                y: 30
+            });
+
+            gsap.to(creditsTitle, {
+                scrollTrigger: {
+                    trigger: credits,
+                    start: 'top 90%',
+                    toggleActions: 'play reverse play reverse',
+                },
+                autoAlpha: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.6,
+                ease: 'power2.out'
+            });
+        }
+
+        // Cards: Instant slide in from sides
+        if (creditsCards.length > 0) {
+            creditsCards.forEach((card, i) => {
+                const fromLeft = i % 2 === 0;
+
+                gsap.set(card, {
+                    autoAlpha: 0,
+                    x: fromLeft ? -40 : 40,
+                    y: 20,
+                    rotation: fromLeft ? -3 : 3,
+                    scale: 0.95
+                });
+
+                gsap.to(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 95%',
+                        toggleActions: 'play reverse play reverse',
+                    },
+                    autoAlpha: 1,
+                    x: 0,
+                    y: 0,
+                    rotation: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    delay: i * 0.1,
+                    ease: 'power2.out'
+                });
+            });
+        }
+    }
+
+    // ========================================
+    // 8. SIDE NAV INDICATOR (Auto-highlight)
+    // ========================================
+    const sideLinks = document.querySelectorAll('.side-link');
+    const sections = ['hero', 'about', 'works', 'contact', 'credits'];
+
+    sections.forEach((id, i) => {
+        const section = document.getElementById(id);
+        if (!section || !sideLinks[i]) return;
+
+        ScrollTrigger.create({
+            trigger: section,
+            start: 'top center',
+            end: 'bottom center',
+            onEnter: () => {
+                sideLinks.forEach(l => l.classList.remove('bg-white'));
+                sideLinks[i]?.classList.add('bg-white');
+            },
+            onEnterBack: () => {
+                sideLinks.forEach(l => l.classList.remove('bg-white'));
+                sideLinks[i]?.classList.add('bg-white');
+            }
+        });
+    });
+
+    // Force refresh after layout settles
+    requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+    });
 };
 
-document.addEventListener('DOMContentLoaded', initScrollAnimations);
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
+// Single initialization point to prevent duplicates
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScrollAnimations, { once: true });
+} else {
     initScrollAnimations();
 }
 
 // --- IDLE ANIMATIONS (INIT) ---
+let idleAnimsInitialized = false;
 const initIdleAnimations = () => {
+    if (idleAnimsInitialized) return;
+    idleAnimsInitialized = true;
+
     // 1. Idle Float (Smoother, Slower, Optimized)
     gsap.utils.toArray('.idle-float').forEach(el => {
+        if (el.hasAttribute('data-idle-init')) return;
+        el.setAttribute('data-idle-init', 'true');
+
         gsap.to(el, {
-            y: -15, // Pixel value is often smoother than percentage for text
-            duration: "random(3, 5)", // Slower for smoothness
+            y: -12,
+            duration: gsap.utils.random(3, 5),
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut",
-            delay: Math.random() * 2,
-            force3D: true, // Force GPU
-            rotation: 0.01 // Hack for smoother anti-aliasing
+            delay: gsap.utils.random(0, 2),
+            force3D: true
         });
     });
 
     // 2. Idle Pulse (Subtler to prevent jitter)
     gsap.utils.toArray('.idle-pulse').forEach(el => {
+        if (el.hasAttribute('data-pulse-init')) return;
+        el.setAttribute('data-pulse-init', 'true');
+
         gsap.to(el, {
-            scale: 1.03, // Reduced from 1.05 to reduce pixel shimmering
-            duration: "random(1.5, 2.5)", // Slower
+            scale: 1.02,
+            duration: gsap.utils.random(2, 3),
             repeat: -1,
             yoyo: true,
-            ease: "sine.inOut", // Sine is smoother than power1 for breathing
-            delay: Math.random() * 2,
-            force3D: true,
-            rotation: 0.01
+            ease: "sine.inOut",
+            delay: gsap.utils.random(0, 2),
+            force3D: true
         });
     });
 };
@@ -345,30 +573,32 @@ const initIdleAnimations = () => {
 initIdleAnimations();
 
 // --- SCROLL-DRIVEN SHAPE SPIN ---
+let shapeSpinInitialized = false;
 const initShapeSpin = () => {
+    if (shapeSpinInitialized) return;
+    shapeSpinInitialized = true;
+
     const shapes = document.querySelectorAll('.neo-shape');
+    if (shapes.length === 0) return;
+
     const shapeTweens = [];
 
     // 1. Convert CSS Animations to GSAP
     shapes.forEach(shape => {
-        // Read class for speed/direction
         let duration = 20;
         let direction = 1;
 
         if (shape.classList.contains('spin-fast')) duration = 6;
-        if (shape.classList.contains('spin-medium')) duration = 12;
-        if (shape.classList.contains('spin-slow')) duration = 20;
+        else if (shape.classList.contains('spin-medium')) duration = 12;
+        else if (shape.classList.contains('spin-slow')) duration = 20;
 
         if (shape.classList.contains('spin-rev-fast')) { duration = 8; direction = -1; }
-        if (shape.classList.contains('spin-rev-medium')) { duration = 15; direction = -1; }
-        if (shape.classList.contains('spin-rev-slow')) { duration = 25; direction = -1; }
+        else if (shape.classList.contains('spin-rev-medium')) { duration = 15; direction = -1; }
+        else if (shape.classList.contains('spin-rev-slow')) { duration = 25; direction = -1; }
 
         // STOP CSS Animation
         shape.style.animation = 'none';
 
-        // Create GSAP Tween
-        // We use a proxy object or just a standard infinite tween
-        // We will modulate timeScale
         const tween = gsap.to(shape, {
             rotation: 360 * direction,
             duration: duration,
@@ -379,55 +609,44 @@ const initShapeSpin = () => {
         shapeTweens.push(tween);
     });
 
-    // 2. React to Scroll Velocity
+    // 2. React to Scroll Velocity (optimized)
     let currentScale = 1;
     let targetScale = 1;
+    let tickerActive = false;
 
-    // Use a lightweight ScrollTrigger to monitor velocity
+    const tickerFn = () => {
+        const lerpFactor = 0.08;
+        currentScale += (targetScale - currentScale) * lerpFactor;
+
+        // Stop ticker when stable
+        if (Math.abs(currentScale - 1) < 0.005 && Math.abs(targetScale - 1) < 0.005) {
+            currentScale = 1;
+            shapeTweens.forEach(t => t.timeScale(1));
+            gsap.ticker.remove(tickerFn);
+            tickerActive = false;
+            return;
+        }
+
+        shapeTweens.forEach(t => t.timeScale(currentScale));
+        targetScale += (1 - targetScale) * 0.15;
+    };
+
     ScrollTrigger.create({
         onUpdate: (self) => {
             const v = Math.abs(self.getVelocity());
-            // Map velocity (0 - 4000+) to a multiplier (1 - 10)
-            // Example: at 2000px/s, we want ~5x speed
-            targetScale = 1 + (v / 300);
+            targetScale = 1 + Math.min(v / 400, 8); // Cap at 9x speed
+
+            if (!tickerActive) {
+                tickerActive = true;
+                gsap.ticker.add(tickerFn);
+            }
         }
-    });
-
-    // 3. Smoothly Decay scale back to 1
-    gsap.ticker.add(() => {
-        // Lerp towards target (smooth acceleration & deceleration)
-        // If user stops scrolling, getVelocity beocmes 0, targetScale becomes 1.
-        // We lerp currentScale down to 1 slowly.
-
-        // Adjust lerp factor (0.1 = responsive, 0.05 = heavy inertia)
-        const lerpFactor = 0.05;
-
-        currentScale += (targetScale - currentScale) * lerpFactor;
-
-        // Optimization: clamp near 1 to avoid infinite micro-calculations
-        if (Math.abs(currentScale - 1) < 0.01) currentScale = 1;
-
-        // Apply to all tweens
-        shapeTweens.forEach(t => t.timeScale(currentScale));
-
-        // Reset target scale frame-by-frame if scroll stops? 
-        // No, ScrollTrigger update only fires on scroll. 
-        // We need to continuously decay targetScale if not scrolling?
-        // Actually, getVelocity() relies on scroll events. If scroll stops, onUpdate doesn't fire?
-        // Wait, ScrollTrigger SHOULD update. But if it doesn't, targetScale sticks at high value.
-        // Correct approach: We use the `scroll` listener or verify velocity in ticker?
-        // GSAP ScrollTrigger tracks velocity internally.
-
-        // Hack: Decay targetScale manually? 
-        // If we don't get an update, we assume velocity is dropping?
-        // Let's rely on GSAP's velocity dumping.
-        // Actually, a safer way is to let the targetScale decay on its own if not refreshed.
-        targetScale += (1 - targetScale) * 0.1;
     });
 };
 
-document.addEventListener('DOMContentLoaded', initShapeSpin);
-// Fallback if DOMContentLoaded already fired (e.g. injected script)
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
+// Single initialization
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShapeSpin, { once: true });
+} else {
     initShapeSpin();
 }

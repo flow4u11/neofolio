@@ -553,3 +553,72 @@ body.real-neo-theme #credits .text-stroke:hover {
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
 }
+
+/* ========================================
+   MONOCHROME THEME (Default) - Pure B&W
+   ======================================== */
+
+/* White sections keep clean background */
+body:not(.real-neo-theme) #about,
+body:not(.real-neo-theme) #contact {
+    background-color: white;
+}
+
+/* ========================================
+   SHAPE COLORS BY SECTION BACKGROUND
+   ======================================== */
+
+/* WHITE SECTIONS (About, Contact) - Black shapes */
+body:not(.real-neo-theme) #about .neo-shape,
+body:not(.real-neo-theme) #contact .neo-shape {
+    color: black !important;
+}
+
+body:not(.real-neo-theme) #about .neo-shape path,
+body:not(.real-neo-theme) #about .neo-shape circle,
+body:not(.real-neo-theme) #about .neo-shape rect,
+body:not(.real-neo-theme) #contact .neo-shape path,
+body:not(.real-neo-theme) #contact .neo-shape circle,
+body:not(.real-neo-theme) #contact .neo-shape rect {
+    fill: black !important;
+    stroke: black !important;
+}
+
+/* Preserve fill="none" for outline shapes on white */
+body:not(.real-neo-theme) #about svg.neo-shape[fill="none"] path,
+body:not(.real-neo-theme) #about svg.neo-shape[fill="none"] circle,
+body:not(.real-neo-theme) #contact svg.neo-shape[fill="none"] path,
+body:not(.real-neo-theme) #contact svg.neo-shape[fill="none"] circle {
+    fill: none !important;
+    stroke: black !important;
+}
+
+/* BLACK SECTIONS (Hero, Works) - White shapes */
+body:not(.real-neo-theme) #hero .neo-shape,
+body:not(.real-neo-theme) #works .neo-shape {
+    color: white !important;
+}
+
+body:not(.real-neo-theme) #hero .neo-shape path,
+body:not(.real-neo-theme) #hero .neo-shape circle,
+body:not(.real-neo-theme) #hero .neo-shape rect,
+body:not(.real-neo-theme) #works .neo-shape path,
+body:not(.real-neo-theme) #works .neo-shape circle,
+body:not(.real-neo-theme) #works .neo-shape rect {
+    fill: white !important;
+    stroke: white !important;
+}
+
+/* Preserve fill="none" for outline shapes on black */
+body:not(.real-neo-theme) #hero svg.neo-shape[fill="none"] path,
+body:not(.real-neo-theme) #hero svg.neo-shape[fill="none"] circle,
+body:not(.real-neo-theme) #works svg.neo-shape[fill="none"] path,
+body:not(.real-neo-theme) #works svg.neo-shape[fill="none"] circle {
+    fill: none !important;
+    stroke: white !important;
+}
+
+/* Shapes in Neo Theme can have colors */
+body.real-neo-theme .neo-shape {
+    opacity: inherit;
+}
