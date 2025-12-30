@@ -194,41 +194,61 @@ const initActiveNav = () => {
         });
     });
 
-    // 2. Scroll Handler (Precise Calculation)
+    // 2. Scroll Handler (Robust Viewport Checking)
     window.addEventListener('scroll', () => {
         if (isManualScroll) return;
 
         let current = '';
-        const scrollY = window.scrollY;
         const viewportHeight = window.innerHeight;
+        const centerPoint = viewportHeight / 2;
 
-        // Offset: We want the section to be active when it 'dominates' the screen
-        // using 30% of viewport height as the "trigger line" from top
-        const offset = viewportHeight * 0.3;
+        // Iterate sections to find which one is "in focus"
+        // We prioritizing section whose CENTER is closest to viewport CENTER
+        // OR simply checking overlaps.
+
+        // Strategy: Check if section covers the middle of the screen.
+        // OR for stacking: The last one that covers the activation line wins.
 
         sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
+            const rect = section.getBoundingClientRect();
 
-            // Check if our "trigger line" is inside this section
-            if (scrollY + offset >= sectionTop && scrollY + offset < sectionTop + sectionHeight) {
+            // Allow a section to be active if it overlaps the middle band of the screen
+            // Top of section is above the bottom-third
+            // Bottom of section is below the top-third
+            // This handles tall sections, pinned sections, and stacked sections better.
+
+            // Specifically for Contact (Pinned): 
+            // When Pinned, its rect stays in viewport. 
+            // When Credits (Footer) comes up, it overlaps Contact. 
+            // Credits is later in the loop (DOM order).
+            // So if Credits covers the activation area, it will overwrite 'current'.
+
+            const triggerLine = viewportHeight * 0.4; // Slightly above center
+
+            if (rect.top <= triggerLine && rect.bottom >= triggerLine) {
                 current = section.getAttribute('id');
             }
         });
 
-        // Special override: If very close to top, force 'hero' active
-        if (scrollY < 100) current = 'hero';
+        // Loop override: If we are at the very top, force Hero
+        if (window.scrollY < 100) current = 'hero';
+
+        // If we are at the very bottom, force Credits (or last section)
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+            // Find last section ID
+            if (sections.length > 0) current = sections[sections.length - 1].getAttribute('id');
+        }
 
         // Apply active class if we found a section
         if (current) {
             const topLink = document.querySelector(`.nav-link[href="#${current}"]`);
-            setTopActive(topLink);
+            setTopActive(topLink); // Pass undefined if not found (e.g. credits), handles gracefully
             setSideActive(current);
         }
     });
 
     // Initial check
-    window.dispatchEvent(new Event('scroll'));
+    setTimeout(() => window.dispatchEvent(new Event('scroll')), 100);
 };
 
 initActiveNav();

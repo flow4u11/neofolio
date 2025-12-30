@@ -218,6 +218,163 @@ body.real-neo-theme #about .grid>div:nth-child(6) .decoration-black {
     text-decoration-color: white !important;
 }
 
+/* NEO THEME DECORATIONS (Shapes) */
+
+/* Hero Section (Black BG) -> Bright Colors */
+body.real-neo-theme #hero .neo-shape:nth-child(1) {
+    color: #FFDE59 !important;
+    opacity: 0.8 !important;
+}
+
+/* Yellow */
+body.real-neo-theme #hero .neo-shape:nth-child(2) {
+    color: #5ce1e6 !important;
+    opacity: 0.8 !important;
+}
+
+/* Cyan */
+body.real-neo-theme #hero .neo-shape:nth-child(3) {
+    color: #FF66C4 !important;
+    opacity: 0.8 !important;
+}
+
+/* Pink */
+body.real-neo-theme #hero .neo-shape:nth-child(4) {
+    color: #7ED957 !important;
+    opacity: 0.8 !important;
+}
+
+/* Green */
+body.real-neo-theme #hero .neo-shape:nth-child(5) {
+    color: #FF914D !important;
+    opacity: 0.8 !important;
+}
+
+/* Orange */
+
+/* About Section (White BG) -> Saturated/Darker Colors for Contrast */
+body.real-neo-theme #about .neo-shape:nth-child(1) {
+    color: #8C52FF !important;
+    opacity: 0.6 !important;
+}
+
+/* Purple */
+body.real-neo-theme #about .neo-shape:nth-child(2) {
+    color: #FF914D !important;
+    opacity: 0.6 !important;
+}
+
+/* Orange */
+body.real-neo-theme #about .neo-shape:nth-child(3) {
+    color: #7ED957 !important;
+    opacity: 0.6 !important;
+}
+
+/* Green */
+body.real-neo-theme #about .neo-shape:nth-child(4) {
+    color: #FF66C4 !important;
+    opacity: 0.6 !important;
+}
+
+/* Pink */
+body.real-neo-theme #about .neo-shape:nth-child(5) {
+    color: #5ce1e6 !important;
+    opacity: 0.6 !important;
+}
+
+/* Cyan */
+
+/* Works Section (Black BG) -> Bright Colors */
+body.real-neo-theme #works .neo-shape:nth-child(1) {
+    color: #FF66C4 !important;
+    opacity: 0.8 !important;
+}
+
+/* Pink */
+body.real-neo-theme #works .neo-shape:nth-child(2) {
+    color: #FFDE59 !important;
+    opacity: 0.8 !important;
+}
+
+/* Yellow */
+body.real-neo-theme #works .neo-shape:nth-child(3) {
+    color: #5ce1e6 !important;
+    opacity: 0.8 !important;
+}
+
+/* Cyan */
+body.real-neo-theme #works .neo-shape:nth-child(4) {
+    color: #8C52FF !important;
+    opacity: 0.8 !important;
+}
+
+/* Purple */
+body.real-neo-theme #works .neo-shape:nth-child(5) {
+    color: #7ED957 !important;
+    opacity: 0.8 !important;
+}
+
+/* Green */
+
+/* Contact Section (White BG) -> Saturated Colors */
+body.real-neo-theme #contact .neo-shape:nth-child(1) {
+    color: #8C52FF !important;
+    opacity: 0.6 !important;
+}
+
+/* Purple */
+body.real-neo-theme #contact .neo-shape:nth-child(2) {
+    color: #7ED957 !important;
+    opacity: 0.6 !important;
+}
+
+/* Green */
+body.real-neo-theme #contact .neo-shape:nth-child(3) {
+    color: #FF914D !important;
+    opacity: 0.6 !important;
+}
+
+/* Orange */
+body.real-neo-theme #contact .neo-shape:nth-child(4) {
+    color: #5ce1e6 !important;
+    opacity: 0.6 !important;
+}
+
+/* Cyan */
+body.real-neo-theme #contact .neo-shape:nth-child(5) {
+    color: #FF66C4 !important;
+    opacity: 0.6 !important;
+}
+
+/* Pink */
+
+/* Credits Section (Black BG) -> Bright Colors */
+body.real-neo-theme #credits .neo-shape:nth-child(1) {
+    color: #5ce1e6 !important;
+    opacity: 0.8 !important;
+}
+
+body.real-neo-theme #credits .neo-shape:nth-child(2) {
+    color: #FFDE59 !important;
+    opacity: 0.8 !important;
+}
+
+body.real-neo-theme #credits .neo-card {
+    background-color: #FFF !important;
+    color: black !important;
+    box-shadow: 8px 8px 0px 0px #FF66C4 !important;
+    border-color: #8C52FF !important;
+}
+
+body.real-neo-theme #credits .text-stroke {
+    -webkit-text-stroke: 2px #FF914D !important;
+    color: transparent !important;
+}
+
+body.real-neo-theme #credits .text-stroke:hover {
+    color: #FFDE59 !important;
+}
+
 /* Marquee Animation */
 @keyframes marquee {
     0% {
