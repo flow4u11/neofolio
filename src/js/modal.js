@@ -26,8 +26,8 @@ const projectData = {
         category: "VIDEO EDITING",
         year: "2024-2025",
         media: [
-            { type: 'video', src: './assets/Ocean%20Eyes%20v1.mov', caption: 'Ocean Eyes' },
-            { type: 'video', src: './assets/Good%20for%20u.mov', caption: 'Good 4 U' }
+            { type: 'youtube', src: 'https://www.youtube.com/watch?v=XlTbpsSaBZw', caption: 'Ocean Eyes' },
+            { type: 'youtube', src: 'https://www.youtube.com/watch?v=dMK628nOoWg', caption: 'Good for u' }
         ]
     }
 };
@@ -46,12 +46,14 @@ window.openProjectModal = (id) => {
 
     const items = data.media || data.images;
 
-    // Intersection Observer for Auto-Pause
+    // Intersection Observer for Auto-Pause (Videos only)
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) {
                 const video = entry.target;
-                if (!video.paused) video.pause();
+                if (video.tagName === 'VIDEO' && !video.paused) video.pause();
+                // Note: We can't auto-pause YouTube iframes easily without the API, 
+                // but standard iframes stop playing when removed from DOM.
             }
         });
     }, { threshold: 0.5 });
@@ -67,6 +69,35 @@ window.openProjectModal = (id) => {
             img.src = item;
             img.className = 'max-w-full max-h-full object-contain border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] bg-white pointer-events-none';
             imgContainer.appendChild(img);
+        } else if (item.type === 'youtube') {
+            // Caption
+            if (item.caption) {
+                const title = document.createElement('h3');
+                title.className = "text-xl md:text-2xl font-black text-black bg-white px-4 py-1 border-2 border-black shadow-[4px_4px_0px_0px_#000]";
+                title.textContent = item.caption;
+                imgContainer.appendChild(title);
+            }
+
+            // Extract Video ID
+            let videoId = '';
+            const url = item.src;
+            if (url.includes('v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+            }
+
+            // YouTube Iframe
+            // Using youtube-nocookie for privacy and standard embed
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+            iframe.title = "YouTube video player";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.allowFullscreen = true;
+            iframe.className = 'w-full max-w-4xl aspect-video border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)] bg-black';
+
+            imgContainer.appendChild(iframe);
+
         } else if (item.type === 'video') {
             // Caption
             if (item.caption) {
